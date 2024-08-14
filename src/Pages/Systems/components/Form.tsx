@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { com, Layout } from 'support';
-// import { toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 interface propsType{
   afterSaved:Function
@@ -26,7 +26,7 @@ const Form = (props:propsType) => {
         tableName:'systems'
       }).then(i=> {
         props.afterSaved();
-        // toast("Kaydedildi!")
+        toast("Kaydedildi!")
       })
     }else{
       com.sql({
@@ -35,7 +35,7 @@ const Form = (props:propsType) => {
         tableName:'systems'
       }).then(i=> {
         props.afterSaved();
-        // toast("Kaydedildi!")
+        toast("Kaydedildi!")
       })
     }
 

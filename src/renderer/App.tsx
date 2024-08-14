@@ -14,14 +14,14 @@ import SideBar from './components/SideBar';
 import Header from './components/Header';
 import { Provider, useGlobalState, com } from 'support';
 import Systems from '../Pages/Systems';
-// import { ToastContainer} from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Workspace = () => {
   const { state, dispatch } = useGlobalState();
 
   return (
     <div className="container-fluid position-relative bg-white d-flex p-0">
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <Router>
         <SideBar/>
         <div className={"content " +(state.sidebar ? 'open' : '') }>
