@@ -13,7 +13,7 @@ class Database {
                 }else{
                     resolve(rows);
                 }
-              
+
             });
           }).finally(() => {
             db.close();
@@ -59,7 +59,7 @@ class Database {
         const rows = await this.query(query,Object.keys(where).map(y=> where[y]));
 
         return rows[0];
-         
+
     }
     getById = async ({id,tableName})=>{
         let where={ [tableName.split("_")[0]+"_id"] :id};
@@ -84,7 +84,7 @@ class Database {
         if(!tableName || tableName==""){
             throw "tabloismibulunamadi";
         }
-        
+
         var query="";
         query=selectLikeConverter(tableName,where,mode,extra,countRow);
         if(query==""){
@@ -138,20 +138,21 @@ class Database {
                     if (err) {
                       return  rejected(err.message);
                     }
+                    //@ts-ignore
                     resolve(this.lastID);
                 });
                 insert.finalize();
-    
+
             }).finally(() => {
                 db.close();
             });
-            
-            
+
+
         }
         else{
             throw "veritipihatali";
         }
-       
+
     }
     remove = async ({where={},tableName,mode ="AND"}) => {
         if(!tableName || tableName==""){
@@ -210,17 +211,17 @@ class Database {
             throw "sorgubulunamadi";
         }
         return this.query(query,[data]);
-    
+
     }
 }
 
 
 //Converters
 const insertConverter = (_tableName:string,_object:object) => {
-    return `INSERT INTO ${_tableName} (${Object.keys(_object).toString()}) VALUES  (${Object.keys(_object).map(_=> '?').toString()})`; 
+    return `INSERT INTO ${_tableName} (${Object.keys(_object).toString()}) VALUES  (${Object.keys(_object).map(_=> '?').toString()})`;
 }
 const removeConverter = (_tableName:string,_where:object,_mode ) => {
-    return `DELETE FROM ${_tableName} WHERE ${Object.keys(_where).map(x=> x+"= ? ").join(_mode+" ")}`; 
+    return `DELETE FROM ${_tableName} WHERE ${Object.keys(_where).map(x=> x+"= ? ").join(_mode+" ")}`;
 }
 const selectQueryConverter = (_tableName:string,_where:object,_mode,_extra:string,_countRow:boolean) => {
     return `SELECT ${ _countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${_tableName} as g WHERE ( ${Object.keys(_where).map(x=> "g."+x+"= ? ").join(_mode+" ")} ) AND 1=1 ${_extra} ; ${ _countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
