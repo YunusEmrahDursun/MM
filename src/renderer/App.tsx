@@ -7,13 +7,13 @@ import './statics/lib/tempusdominus/css/tempusdominus-bootstrap-4.css';
 import './statics/styles/bootstrap-min.css';
 import './statics/styles/style.css';
 
-import Home from '../pages/Home';
-import Maintenance from '../pages/Maintenance';
-import NotFound from '../pages/NotFound';
+import Home from '../Pages/Home';
+import Maintenance from '../Pages/Maintenance';
+import NotFound from '../Pages/NotFound';
 import SideBar from './components/SideBar';
 import Header from './components/Header';
 import { Provider, useGlobalState, com } from 'support';
-import Systems from '../pages/Systems';
+import Systems from '../Pages/Systems';
 // import { ToastContainer} from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 const Workspace = () => {

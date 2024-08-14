@@ -14,8 +14,6 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-// import sqlite from 'sqlite3';
-import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import db from './db';
 import generateDb from './generateDb';
@@ -28,24 +26,6 @@ export default class AppUpdater {
   }
 }
 
-// const sqlite3 = sqlite.verbose();
-// const db = new sqlite3.Database('memory');
-
-// db.serialize(() => {
-//   db.run('CREATE TABLE lorem (info TEXT)');
-
-//   const stmt = db.prepare('INSERT INTO lorem VALUES (?)');
-//   for (let i = 0; i < 10; i += 1) {
-//     stmt.run(`Ipsum ${i}`);
-//   }
-//   stmt.finalize();
-
-//   db.each('SELECT rowid AS id, info FROM lorem', (_err, row) => {
-//     console.log(`${row.id}: ${row.info}`);
-//   });
-// });
-
-// db.close();
 generateDb.create();
 let mainWindow: BrowserWindow | null = null;
 
@@ -107,7 +87,7 @@ const createWindow = async () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
+  mainWindow.setMenuBarVisibility(false)
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
@@ -125,8 +105,6 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
 
   // Open urls in the user's browser
   mainWindow.webContents.on('new-window', (event, url) => {
