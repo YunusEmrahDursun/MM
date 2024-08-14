@@ -1,50 +1,51 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
-import './App.css';
 
-const Hello = () => {
+import './statics/fonts/css2.css';
+import './statics/styles/allmin.css';
+import './statics/lib/owlcarousel/assets/owlcarousel.css';
+import './statics/lib/tempusdominus/css/tempusdominus-bootstrap-4.css';
+import './statics/styles/bootstrap-min.css';
+import './statics/styles/style.css';
+
+import Home from '../pages/Home';
+import Maintenance from '../pages/Maintenance';
+import NotFound from '../pages/NotFound';
+import SideBar from './components/SideBar';
+import Header from './components/Header';
+import { Provider, useGlobalState, com } from 'support';
+import Systems from '../pages/Systems';
+// import { ToastContainer} from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+const Workspace = () => {
+  const { state, dispatch } = useGlobalState();
+
   return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
+    <div className="container-fluid position-relative bg-white d-flex p-0">
+      {/* <ToastContainer /> */}
+      <Router>
+        <SideBar/>
+        <div className={"content " +(state.sidebar ? 'open' : '') }>
+          <Header/>
+          <div className="container-fluid pt-4 px-4">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/systems" element={<Systems />} />
+              <Route path="/createMaintenance" element={<Maintenance />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </div>
+      </Router>
     </div>
-  );
-};
+
+  )
+}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
-    </Router>
-  );
+    <Provider>
+			<Workspace />
+		</Provider>
+
+  )
 }
