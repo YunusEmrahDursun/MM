@@ -53,14 +53,14 @@ function generatePdfBakim(obj:{
   doc.text(obj.aciklama, 10, 139);
 
   doc.setFontSize(12);
-  doc.text(obj.personel ,90,182)
+  doc.text(obj.personel ,38,170)
   doc.setFontSize(8);
-  doc.text(obj.personel ,90,182)
+  doc.text(obj.personel ,38,175)
 
   doc.setFontSize(12);
-  doc.text(obj.yonetici, 151, 182);
+  doc.text(obj.yonetici, 220, 170);
   doc.setFontSize(8);
-  doc.text(obj.yonetici, 151, 182);
+  doc.text(obj.yonetici, 220, 175);
 
   doc.save("belgeTarihi" + "-" + "belgeNo");
 
