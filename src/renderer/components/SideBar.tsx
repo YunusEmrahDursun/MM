@@ -6,11 +6,16 @@ import { useGlobalState } from "./../../support/index";
 const menu = [
   { text: 'AnaEkran', icon: 'fa-tachometer-alt', link: '/' },
   { text: 'Sistemler', icon: 'fa-cogs', link: '/systems' },
-  // {
-  //   text: 'Tanımlar', icon: 'fa-cogs', subrows: [
-  //     { text: 'Sistemler', link: '/systems' },
-  //   ]
-  // },
+  {
+    text: 'Tanımlar', icon: 'fa-cogs', subrows: [
+      { text: 'Birlikler', link: '/sides' },
+      { text: 'Sistemler', link: '/systems' },
+      { text: 'Periyodlar', link: '/periyods' },
+      { text: 'Teknisyenler', link: '/technicians' },
+      { text: 'Görevli Personel', link: '/officers' },
+      { text: 'Malzeme', link: '/stocks' },
+    ]
+  },
 ];
 export default () => {
 

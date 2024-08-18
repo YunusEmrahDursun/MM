@@ -33,17 +33,18 @@ const create = () => {
         fiyati FLOAT
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS technician (
+    db.run(`CREATE TABLE IF NOT EXISTS technicians (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         title TEXT
     )`);
 
-    db.run(`CREATE TABLE IF NOT EXISTS officer (
+    db.run(`CREATE TABLE IF NOT EXISTS officers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         title TEXT
     )`);
+
 }
 
 export default { create }
