@@ -25,8 +25,8 @@ const Systems = () => {
         <Layout>
           <nav className='mb-3'>
             <div className="nav nav-tabs" id="nav-tab" role="tablist">
-              <button className={"nav-link " + ( tab == 'list' && 'active') }  data-bs-toggle="tab" type="button" onClick={()=> setTab('list')}>Sistemler</button>
-              <button className={"nav-link " + ( tab == 'form' && 'active') }  data-bs-toggle="tab"  type="button" onClick={()=> setTab('form')}>Sistem Ekle/Güncelleştir</button>
+              <button className={"nav-link " + ( tab == 'list' && 'active') }  data-bs-toggle="tab" type="button" onClick={()=> setTab('list')}>Malzemeler</button>
+              <button className={"nav-link " + ( tab == 'form' && 'active') }  data-bs-toggle="tab"  type="button" onClick={()=> setTab('form')}>Malzeme Ekle/Güncelleştir</button>
             </div>
           </nav>
           { tab == 'list' && <List selectItem={selectItem}/>}

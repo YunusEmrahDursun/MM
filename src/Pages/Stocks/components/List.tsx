@@ -20,7 +20,7 @@ const List = (props:propsType) => {
     const getData = () => {
       com.sql({
         type:'selectAll',
-        tableName:'systems'
+        tableName:'stocks'
       }).then(res=> setData(res.map(i=>({
         ...i,
         button: <div className='float-end'>
@@ -34,7 +34,7 @@ const List = (props:propsType) => {
 
       com.sql({
         type:'remove',
-        tableName:'systems',
+        tableName:'stocks',
         where:{id:item.id}
       }).then(res=>{
         getData();
@@ -51,6 +51,8 @@ const List = (props:propsType) => {
                     [
                         { label:'#',key:'id'},
                         { label:'Ad',key:'name'},
+                        { label:'Parça No',key:'parcaNo'},
+                        { label:'Miktar',key:'miktar'},
                         { label:'',key:'button'},
                     ]
                 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import List from './components/List';
 import Form from './components/Form';
 import { Layout } from 'support';
-const Systems = () => {
+const Sides = () => {
     const [tab, setTab] = useState('list')
     const [select, setSelect] = useState(null);
 
@@ -35,4 +35,4 @@ const Systems = () => {
     )
 }
 
-export default Systems
+export default Sides
