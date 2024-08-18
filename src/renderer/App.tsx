@@ -13,7 +13,12 @@ import NotFound from '../Pages/NotFound';
 import SideBar from './components/SideBar';
 import Header from './components/Header';
 import { Provider, useGlobalState, com } from 'support';
+import Sides from '../Pages/Sides';
 import Systems from '../Pages/Systems';
+import Periyods from '../Pages/Periyods';
+import Technicians from '../Pages/Technicians';
+import Officers from '../Pages/Officers';
+import Stocks from '../Pages/Stocks';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const Workspace = () => {
@@ -29,8 +34,13 @@ const Workspace = () => {
           <div className="container-fluid pt-4 px-4">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/systems" element={<Systems />} />
               <Route path="/createMaintenance" element={<Maintenance />} />
+              <Route path="/sides" element={<Sides />} />
+              <Route path="/systems" element={<Systems />} />
+              <Route path="/periyods" element={<Periyods />} />
+              <Route path="/technicians" element={<Technicians />} />
+              <Route path="/officers" element={<Officers />} />
+              <Route path="/stocks" element={<Stocks />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

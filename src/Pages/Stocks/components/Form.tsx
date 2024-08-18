@@ -49,7 +49,7 @@ const Form = (props:propsType) => {
     <Layout>
       <div className="mb-3">
           <label className="form-label">Sistem Adı</label>
-          <input className="form-control"  value={form.name} onChange={(e)=> formChange(e,'name')}/>
+          <input className="form-control"  aria-describedby="name" value={form.name} onChange={(e)=> formChange(e,'name')}/>
       </div>
       <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
     </Layout>

@@ -5,7 +5,6 @@ import { useGlobalState } from "./../../support/index";
 
 const menu = [
   { text: 'AnaEkran', icon: 'fa-tachometer-alt', link: '/' },
-  { text: 'Sistemler', icon: 'fa-cogs', link: '/systems' },
   {
     text: 'Tanımlar', icon: 'fa-cogs', subrows: [
       { text: 'Birlikler', link: '/sides' },

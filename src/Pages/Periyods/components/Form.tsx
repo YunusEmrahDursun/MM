@@ -23,7 +23,7 @@ const Form = (props:propsType) => {
         type:'update',
         data:form,
         where:{id:form.id},
-        tableName:'systems'
+        tableName:'periyods'
       }).then(i=> {
         props.afterSaved();
         toast("Kaydedildi!")
@@ -32,7 +32,7 @@ const Form = (props:propsType) => {
       com.sql({
         type:'insert',
         data:form,
-        tableName:'systems'
+        tableName:'periyods'
       }).then(i=> {
         props.afterSaved();
         toast("Kaydedildi!")
@@ -48,8 +48,8 @@ const Form = (props:propsType) => {
   return (
     <Layout>
       <div className="mb-3">
-          <label className="form-label">Sistem Adı</label>
-          <input className="form-control"  value={form.name} onChange={(e)=> formChange(e,'name')}/>
+          <label className="form-label">Periyod</label>
+          <input className="form-control" value={form.name} onChange={(e)=> formChange(e,'name')}/>
       </div>
       <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
     </Layout>

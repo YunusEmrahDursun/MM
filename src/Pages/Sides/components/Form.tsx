@@ -6,7 +6,7 @@ interface propsType{
   afterSaved:Function
   select:any
 }
-const initialForm = {name:''};
+const initialForm = {name:'', shortName:''};
 
 const Form = (props:propsType) => {
   const [form, setForm] = useState<any>(initialForm);
@@ -23,7 +23,7 @@ const Form = (props:propsType) => {
         type:'update',
         data:form,
         where:{id:form.id},
-        tableName:'systems'
+        tableName:'sides'
       }).then(i=> {
         props.afterSaved();
         toast("Kaydedildi!")
@@ -32,7 +32,7 @@ const Form = (props:propsType) => {
       com.sql({
         type:'insert',
         data:form,
-        tableName:'systems'
+        tableName:'sides'
       }).then(i=> {
         props.afterSaved();
         toast("Kaydedildi!")
@@ -48,8 +48,12 @@ const Form = (props:propsType) => {
   return (
     <Layout>
       <div className="mb-3">
-          <label className="form-label">Sistem Adı</label>
+          <label className="form-label">Birlik Adı</label>
           <input className="form-control"  value={form.name} onChange={(e)=> formChange(e,'name')}/>
+      </div>
+      <div className="mb-3">
+          <label className="form-label">Birlik Kodu</label>
+          <input className="form-control"  value={form.shortName} onChange={(e)=> formChange(e,'shortName')}/>
       </div>
       <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
     </Layout>
