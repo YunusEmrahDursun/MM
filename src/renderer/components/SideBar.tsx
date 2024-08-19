@@ -25,11 +25,12 @@ export default () => {
   return (
     <div className={"sidebar pe-4 pb-3 "+ (state.sidebar ? 'open' : '')}>
         <nav className="navbar bg-light navbar-light position-relative">
-          <a href="/" className="navbar-brand mx-4 w-100">
-            <h3 className="text-primary text-center">
-              M&M
-            </h3>
-          </a>
+            <Link to={'/'} className="navbar-brand mx-4 w-100">
+              <h3 className="text-primary text-center">
+                M&M
+              </h3>
+            </Link>
+
           <div className="d-flex align-items-center ms-4">
             <div className="position-relative">
               <img className="rounded-circle" src={logo}/>

@@ -8,11 +8,11 @@ import './statics/styles/bootstrap-min.css';
 import './statics/styles/style.css';
 
 import Home from '../Pages/Home';
-import Maintenance from '../Pages/Maintenance';
+import Maintenance from '../Pages/Maintenance/';
 import NotFound from '../Pages/NotFound';
 import SideBar from './components/SideBar';
 import Header from './components/Header';
-import { Provider, useGlobalState, com } from 'support';
+import { Provider, useGlobalState } from 'support';
 import Sides from '../Pages/Sides';
 import Systems from '../Pages/Systems';
 import Periyods from '../Pages/Periyods';

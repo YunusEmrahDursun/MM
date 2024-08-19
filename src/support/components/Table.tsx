@@ -31,7 +31,7 @@ const Table = (props:propsType) => {
                         }
                     </tbody>
                 </table> :  <div style={{height:200}} className="row bg-light rounded align-items-center justify-content-center mx-0">
-                    <div style={{ border: "5px solid white" }} className="col-md-6 p-3 text-center">
+                    <div style={{ border: "2px solid #dddddd",borderRadius:26 }} className="col-md-6 p-3 text-center">
                         Herhangi Bir Kayıt Bulunamadı. Lütfen Ekleyiniz.
                     </div>
                 </div>

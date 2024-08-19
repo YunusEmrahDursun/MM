@@ -54,9 +54,35 @@ const Form = (props:propsType) => {
 
   return (
     <Layout>
-      <div className="mb-3">
-          <label className="form-label">Sistem Adı</label>
-          <input className="form-control" value={form.name} onChange={(e)=> formChange(e,'name')}/>
+      <div className="row">
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Stok Adı</label>
+            <input className="form-control" value={form.name} onChange={(e)=> formChange(e,'name')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Stok No</label>
+            <input className="form-control" value={form.stokNo} onChange={(e)=> formChange(e,'stokNo')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Parça No</label>
+            <input className="form-control" value={form.parcaNo} onChange={(e)=> formChange(e,'parcaNo')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Miktar</label>
+            <input className="form-control" value={form.miktar} onChange={(e)=> formChange(e,'miktar')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Sarf Yeri</label>
+            <input className="form-control" value={form.sarfYeri} onChange={(e)=> formChange(e,'sarfYeri')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Tedarik Yeri</label>
+            <input className="form-control" value={form.tedarikYeri} onChange={(e)=> formChange(e,'tedarikYeri')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Fiyat</label>
+            <input className="form-control" value={form.fiyati} onChange={(e)=> formChange(e,'fiyati')}/>
+        </div>
       </div>
       <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
     </Layout>
