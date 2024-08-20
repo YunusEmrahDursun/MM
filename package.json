@@ -8,11 +8,9 @@
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir src",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
-    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
-    "start": "npm run start:renderer",
-    "start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only ./src/main/main.ts",
-    "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "prepare": "husky install"
+    "postinstall": "ts-node .erb/scripts/check-native-dep.ts && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
+    "start": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true npx webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+    "start:main": "cross-env NODE_ENV=development electron -r ts-node/register/transpile-only ./src/main/main.ts"
   },
   "build": {
     "productName": "ElectronReact",
@@ -86,7 +84,6 @@
     "@types/webpack-env": "^1.18.5",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "browserslist-config-erb": "^0.0.3",
-    "chalk": "^5.3.0",
     "concurrently": "^8.2.2",
     "core-js": "^3.38.0",
     "cross-env": "^7.0.3",
@@ -100,7 +97,6 @@
     "electron-rebuild": "^3.2.9",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.6.0",
-    "husky": "^9.1.4",
     "identity-obj-proxy": "^3.0.0",
     "lint-staged": "^15.2.9",
     "mini-css-extract-plugin": "^2.9.0",
@@ -123,10 +119,6 @@
     "webpack-dev-server": "^5.0.4",
     "webpack-merge": "^6.0.1"
   },
-  "devEngines": {
-    "node": ">=14.x",
-    "npm": ">=7.x"
-  },
   "browserslist": [],
   "prettier": {
     "overrides": [
@@ -143,6 +135,7 @@
     "singleQuote": true
   },
   "dependencies": {
+    "chalk": "^4.1.2",
     "electron-debug": "^4.0.1",
     "electron-log": "^5.1.7",
     "electron-updater": "^6.2.1",
