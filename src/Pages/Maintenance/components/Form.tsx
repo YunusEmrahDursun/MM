@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { com, Layout } from "support";
+import { com, Layout, Select } from "support";
 import { generatePdfBakim } from "./generator";
-
+import { toast } from 'react-toastify';
+import moment from "moment";
 const initialForm = {
   name:'',
   birlik:{name:'', id:0},
   sistem:{name:'', id:0, shortName:''},
   periyod:{name:'', id:0},
   kontrolNo:'',
-  baslangicTarihi:'',
+  baslangicTarihi: moment().format('DD.MM.YYYY'),
   baslangicSaati:'',
-  bitisTarihi:'',
+  bitisTarihi: moment().format('DD.MM.YYYY'),
   bitisSaati:'',
   dokuman:'',
   aciklama:'',
-  personel:{name:'', id:0},
-  yonetici:{name:'', id:0},
+  personel:{name:'', id:0, title:''},
+  yonetici:{name:'', id:0, title:''},
 };
 interface propsType{
   afterSaved:Function
@@ -23,31 +24,71 @@ interface propsType{
 }
 function Form(props:propsType) {
   const [form, setForm] = useState(initialForm);
-  const [birlikler, setBirlikler] = useState([]);
-  const [sistemler, setSistemler] = useState([]);
-  const [periyotlar, setPeriyotlar] = useState([]);
+  const [birlikler, setBirlikler] = useState<null | []>(null);
+  const [sistemler, setSistemler] = useState<null | []>(null);
+  const [periyotlar, setPeriyotlar] = useState<null | []>(null);
+  const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
+  const [yoneticiler, setYoneticiler] = useState<null | []>(null);
 
   useEffect(() => {
-     getData();
-  }, [])
+    getData();
+  }, []);
 
   const getData = () => {
-    com.sql({ type:'selectAll', tableName:'sides' }).then(res=> {
-      if(res.length == 1){
-        setForm(prev=> ({...prev,birlik:res[0]}))
+    Promise.all([
+      com.sql({ type: 'selectAll', tableName: 'sides' }),
+      com.sql({ type: 'selectAll', tableName: 'systems' }),
+      com.sql({ type: 'selectAll', tableName: 'periyods' }),
+      com.sql({ type: 'selectAll', tableName: 'technicians' }),
+      com.sql({ type: 'selectAll', tableName: 'officers' }),
+    ]).then(([sidesRes, systemsRes, periyodsRes, techniciansRes, officersRes]) => {
+      let temp = props.select;
+      if(props.select){
+        temp = {
+          ...props.select,
+          birlik: sidesRes.find(i=> i.id == props.select.birlik ) || { id: '' },
+          sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
+          personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
+          yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
+          periyod: periyodsRes.find(i=> i.id == props.select.periyod ) || { id: '' },
+          baslangicTarihi:moment(props.select.baslangicTarihi).format("DD.MM.YYYY"),
+          baslangicSaati:moment(props.select.baslangicTarihi).format("HH:mm"),
+          bitisTarihi:moment(props.select.bitisTarihi).format("DD.MM.YYYY"),
+          bitisSaati:moment(props.select.bitisTarihi).format("HH:mm"),
+        }
+      }else{
+
+        if (sidesRes.length === 1) {
+          temp.birlik = sidesRes[0];
+          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD');
+        }
+        if (techniciansRes.length === 1) {
+          temp.personel = techniciansRes[0]
+        }
+        if (officersRes.length === 1) {
+          temp.yonetici = officersRes[0]
+        }
+        temp = {...initialForm};
       }
-      setBirlikler(res)
+
+      setBirlikler(sidesRes);
+      setSistemler(systemsRes);
+      setPeriyotlar(periyodsRes);
+      setTeknisyenler(techniciansRes);
+      setYoneticiler(officersRes);
+      setForm(temp);
+
+    }).catch(error => {
+
     });
-    com.sql({ type:'selectAll', tableName:'systems' }).then(res=> { setSistemler(res) });
-    com.sql({ type:'selectAll', tableName:'periyods' }).then(res=> { setPeriyotlar(res) });
+
+
   }
 
   const generateClick = () => {
-    console.log(form)
     generatePdfBakim({
       birlikAdi:form.birlik.name,
       sistemAdi:form.sistem.name,
-      bolgeKodu:form.sistem.shortName,
       kontrolNo:form.kontrolNo,
 
       baslangicTarihi:form.baslangicTarihi,
@@ -60,85 +101,121 @@ function Form(props:propsType) {
       periyod:form.periyod.name,
       personel:form.personel.name,
       yonetici:form.yonetici.name,
-
+      personelKase:form.personel.title,
+      yoneticiKase:form.yonetici.title,
 
       malzemeler:""
     })
   }
   const saveClick = () => {
 
-    // com.sql({
-    //   type:'insert',
-    //   data:form,
-    //   tableName:'systems'
-    // }).then(i=> {
-        props.afterSaved();
-    //   toast("Kaydedildi!")
-    // })
+    com.sql({
+      type:'insert',
+      data:{
+        kontrolNo:form.kontrolNo,
+        birlik:form.birlik.id,
+        sistem:form.sistem.id,
+        personel:form.personel.id,
+        yonetici:form.yonetici.id,
+        periyod:form.periyod.id,
+        aciklama:form.aciklama,
+        dokuman:form.dokuman,
+        baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+        bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+      },
+      tableName:'maintenances'
+    }).then(i=> {
+      props.afterSaved();
+      toast("Kaydedildi!")
+    })
   }
   const formChange = (e, key) => {
-    setForm({...form, [key]:e.target.value})
+    const temp = {...form};
+
+    if(key == 'birlik'){
+      if(e.target.value.shortName){
+        temp.kontrolNo = e.target.value.shortName + '-' + moment().format('YYMMDD') || '';
+      }else{
+        temp.kontrolNo = '';
+      }
+
+      temp[key] = e.target.value;
+    }
+    else if(key == 'baslangicTarihi' || key == 'bitisTarihi'){
+      let inputValue = e.target.value.replace(/\D/g, '');
+      if (inputValue.length > 2) {
+        inputValue = inputValue.slice(0, 2) + '.' + inputValue.slice(2);
+      }
+      if (inputValue.length > 5) {
+        inputValue = inputValue.slice(0, 5) + '.' + inputValue.slice(5);
+      }
+      if (inputValue.length > 10) {
+        inputValue = inputValue.slice(0, 10);
+      }
+      if(inputValue.length == 10){
+        if(key == 'baslangicTarihi' && temp.bitisTarihi == '' ){
+          temp.bitisTarihi = inputValue;
+        }
+      }
+      temp[key] = inputValue;
+    }else if(key == 'baslangicSaati' || key == 'bitisSaati'){
+      let inputValue = e.target.value.replace(/\D/g, '');
+      if (inputValue.length > 2) {
+        inputValue = inputValue.slice(0, 2) + ':' + inputValue.slice(2);
+      }
+      if (inputValue.length > 5) {
+        inputValue = inputValue.slice(0, 5);
+      }
+      temp[key] = inputValue;
+    }
+    else{
+      temp[key] = e.target.value;
+    }
+
+    setForm(temp);
+
   }
   return (
     <Layout>
       <div className="row">
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Birlik Adı</label>
-            <select className="form-select " aria-label="Seçiniz" value={form.birlik.id} onChange={(e)=> formChange(e,'birlik')}>
-              <option>Birlik Seçiniz!</option>
-              {
-                birlikler.map((i:any)=> <option key={i.id} value={i.id} >{i.name}</option>)
-              }
-            </select>
+            <Select placeHolder="Birlik Seçiniz!" values={birlikler} value={form.birlik} onChange={(e)=> formChange(e,'birlik')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Sistem Adı</label>
-            <select className="form-select" aria-label="Seçiniz" value={form.sistem.id} onChange={(e)=> formChange(e,'sistem')}>
-              <option>Sistem Seçiniz!</option>
-              {
-                sistemler.map((i:any)=> <option key={i.id} value={i.id} >{i.name}</option>)
-              }
-            </select>
+            <Select placeHolder="Sistem Seçiniz!" values={sistemler} value={form.sistem} onChange={(e)=> formChange(e,'sistem')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kontrol No</label>
             <input className="form-control"  value={form.kontrolNo} onChange={(e)=> formChange(e,'kontrolNo')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
-        <label className="form-label">Periyod</label>
-            <select className="form-select" aria-label="Seçiniz" value={form.periyod.id} onChange={(e)=> formChange(e,'periyod')}>
-              <option>Periyod Seçiniz!</option>
-              {
-                periyotlar.map((i:any)=> <option key={i.id} value={i.id} >{i.name}</option>)
-              }
-            </select>
+          <label className="form-label">Periyod</label>
+          <Select placeHolder="Periyod Seçiniz!" values={periyotlar} value={form.periyod} onChange={(e)=> formChange(e,'periyod')}/>
         </div>
       </div>
 
       <div className="row">
         <div className="col-sm-6 col-xl-3 mb-3">
             <label className="form-label">Başlangıç Tarihi</label>
-            <input className="form-control"  value={form.baslangicTarihi} onChange={(e)=> formChange(e,'baslangicTarihi')}/>
+            <input placeholder="gg.aa.yyyy" className="form-control"  value={form.baslangicTarihi} onChange={(e)=> formChange(e,'baslangicTarihi')}/>
         </div>
         <div className="col-sm-6 col-xl-3 mb-3">
             <label className="form-label">Başlangıç Saati</label>
-            <input className="form-control"  value={form.baslangicSaati} onChange={(e)=> formChange(e,'baslangicSaati')}/>
+            <input placeholder="ss:dd" className="form-control"  value={form.baslangicSaati} onChange={(e)=> formChange(e,'baslangicSaati')}/>
         </div>
         <div className="col-sm-6 col-xl-3 mb-3">
             <label className="form-label">Bitiş Tarihi</label>
-            <input className="form-control"  value={form.bitisTarihi} onChange={(e)=> formChange(e,'bitisTarihi')}/>
+            <input placeholder="gg.aa.yyyy" className="form-control"  value={form.bitisTarihi} onChange={(e)=> formChange(e,'bitisTarihi')}/>
         </div>
         <div className="col-sm-6 col-xl-3 mb-3">
             <label className="form-label">Bitiş Saati</label>
-            <input className="form-control"  value={form.bitisSaati} onChange={(e)=> formChange(e,'bitisSaati')}/>
+            <input placeholder="ss:dd" className="form-control"  value={form.bitisSaati} onChange={(e)=> formChange(e,'bitisSaati')}/>
         </div>
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-xl-12 mb-3">
-            <label className="form-label">Döküman</label>
-            <textarea className="form-control"  value={form.dokuman} onChange={(e)=> formChange(e,'dokuman')}/>
-        </div>
         <div className="col-sm-12 col-xl-12 mb-3">
             <label className="form-label">Döküman</label>
             <textarea className="form-control"  value={form.dokuman} onChange={(e)=> formChange(e,'dokuman')}/>
@@ -147,7 +224,17 @@ function Form(props:propsType) {
             <label className="form-label">Yapılan Çalışma</label>
             <textarea className="form-control"  value={form.aciklama} onChange={(e)=> formChange(e,'aciklama')}/>
         </div>
+      </div>
 
+      <div className="row">
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Personel</label>
+            <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personel} onChange={(e)=> formChange(e,'personel')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Yönetici</label>
+            <Select placeHolder="Yönetici Seçiniz!" values={yoneticiler} value={form.yonetici} onChange={(e)=> formChange(e,'yonetici')}/>
+        </div>
       </div>
 
       <div>

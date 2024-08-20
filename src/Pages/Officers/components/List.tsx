@@ -45,17 +45,17 @@ const List = (props:propsType) => {
 
     return (
         <>
-            <button  onClick={()=>props.selectItem(null)} type="button" className="float-end btn btn-primary rounded-pill m-2"><i className="fa fa-plus me-2"></i>Ekle</button>
-            <Table
-                header={
-                    [
-                        { label:'#',key:'id'},
-                        { label:'Ad',key:'name'},
-                        { label:'Kaşe',key:'title'},
-                        { label:'',key:'button'},
-                    ]
-                }
-                data={data}/>
+          <button  onClick={()=>props.selectItem(null)} type="button" className="float-end btn btn-primary rounded-pill m-2"><i className="fa fa-plus me-2"></i>Ekle</button>
+          <Table
+            header={
+                [
+                    { label:'#',key:'id'},
+                    { label:'Ad',key:'name'},
+                    { label:'Kaşe',key:'title'},
+                    { label:'',key:'button'},
+                ]
+            }
+            data={data}/>
         </>
     )
 }

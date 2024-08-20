@@ -45,6 +45,22 @@ const create = () => {
         title TEXT
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS maintenances (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      birlik INTEGER,
+      sistem INTEGER,
+      kontrolNo TEXT,
+      baslangicTarihi DATETIME,
+      bitisTarihi DATETIME,
+      aciklama TEXT,
+      dokuman TEXT,
+      periyod INTEGER,
+      personel INTEGER,
+      yonetici INTEGER
+
+    )`);
+
+
 }
 
 export default { create }
