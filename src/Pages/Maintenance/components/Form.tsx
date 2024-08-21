@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { com, Layout, Select } from "support";
-import { generatePdfBakim } from "./generator";
+import { com, Layout, Select, generatePdfBakim } from "support";
 import { toast } from 'react-toastify';
 import moment from "moment";
 const initialForm = {
   name:'',
-  birlik:{name:'', id:0},
-  sistem:{name:'', id:0, shortName:''},
-  periyod:{name:'', id:0},
+  birlik:{name:'', id:''},
+  sistem:{name:'', id:'', shortName:''},
+  periyod:{name:'', id:''},
   kontrolNo:'',
   baslangicTarihi: moment().format('DD.MM.YYYY'),
   baslangicSaati:'',
@@ -15,8 +14,9 @@ const initialForm = {
   bitisSaati:'',
   dokuman:'',
   aciklama:'',
-  personel:{name:'', id:0, title:''},
-  yonetici:{name:'', id:0, title:''},
+  personel:{name:'', id:'', title:''},
+  yonetici:{name:'', id:'', title:''},
+  malzemeler:[]
 };
 interface propsType{
   afterSaved:Function
@@ -29,6 +29,10 @@ function Form(props:propsType) {
   const [periyotlar, setPeriyotlar] = useState<null | []>(null);
   const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
   const [yoneticiler, setYoneticiler] = useState<null | []>(null);
+  const [malzemeler, setMalzemeler] = useState<null | []>(null);
+  const [selectedMalzeme, setSelectedMalzeme] = useState<any>(null);
+  const [malzemeList, setMalzemeList] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     getData();
@@ -41,8 +45,9 @@ function Form(props:propsType) {
       com.sql({ type: 'selectAll', tableName: 'periyods' }),
       com.sql({ type: 'selectAll', tableName: 'technicians' }),
       com.sql({ type: 'selectAll', tableName: 'officers' }),
-    ]).then(([sidesRes, systemsRes, periyodsRes, techniciansRes, officersRes]) => {
-      let temp = props.select;
+      com.sql({ type: 'selectAll', tableName: 'stocks' }),
+    ]).then(([sidesRes, systemsRes, periyodsRes, techniciansRes, officersRes, maintenancesRes]) => {
+      let temp;
       if(props.select){
         temp = {
           ...props.select,
@@ -56,7 +61,13 @@ function Form(props:propsType) {
           bitisTarihi:moment(props.select.bitisTarihi).format("DD.MM.YYYY"),
           bitisSaati:moment(props.select.bitisTarihi).format("HH:mm"),
         }
+        try {
+          setMalzemeList(JSON.parse(props.select.malzemeler))
+        } catch (error) {
+
+        }
       }else{
+        temp = {...initialForm};
 
         if (sidesRes.length === 1) {
           temp.birlik = sidesRes[0];
@@ -68,7 +79,6 @@ function Form(props:propsType) {
         if (officersRes.length === 1) {
           temp.yonetici = officersRes[0]
         }
-        temp = {...initialForm};
       }
 
       setBirlikler(sidesRes);
@@ -76,6 +86,7 @@ function Form(props:propsType) {
       setPeriyotlar(periyodsRes);
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
+      setMalzemeler(maintenancesRes);
       setForm(temp);
 
     }).catch(error => {
@@ -104,7 +115,7 @@ function Form(props:propsType) {
       personelKase:form.personel.title,
       yoneticiKase:form.yonetici.title,
 
-      malzemeler:""
+      malzemeler:malzemeList
     })
   }
   const saveClick = () => {
@@ -122,6 +133,7 @@ function Form(props:propsType) {
         dokuman:form.dokuman,
         baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
         bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+        malzemeler:JSON.stringify(malzemeList)
       },
       tableName:'maintenances'
     }).then(i=> {
@@ -173,6 +185,36 @@ function Form(props:propsType) {
     }
 
     setForm(temp);
+
+  }
+
+  const malzemeEkle = () => {
+    if (malzemeList.length >= 3) {
+      setErrorMessage('Maksimum 3 malzeme seçebilirsiniz.');
+      return;
+    }
+
+    if (selectedMalzeme) {
+      const isAlreadyInList = malzemeList.some(malzeme => malzeme.id === selectedMalzeme.id);
+
+      if (isAlreadyInList) {
+        setErrorMessage('Bu malzeme zaten eklendi.');
+      } else {
+        setMalzemeList([...malzemeList, {...selectedMalzeme, girilenMiktar:'' }]);
+        setSelectedMalzeme(null);
+        setErrorMessage('');
+      }
+    }
+  };
+
+  const malzemeSil = (id) => {
+    setMalzemeList(malzemeList.filter((malzeme:any) => malzeme.id !== id));
+  };
+
+  const malzemeMiktarChange = (e,index) => {
+    const temp = [...malzemeList];
+    malzemeList[index].girilenMiktar = e.target.value;
+    setMalzemeList(temp)
 
   }
   return (
@@ -235,6 +277,64 @@ function Form(props:propsType) {
             <label className="form-label">Yönetici</label>
             <Select placeHolder="Yönetici Seçiniz!" values={yoneticiler} value={form.yonetici} onChange={(e)=> formChange(e,'yonetici')}/>
         </div>
+      </div>
+
+      <div className="mb-5">
+        <label className="form-label">Malzemeler</label>
+        <div className="d-flex mb-2">
+          <Select
+            placeHolder="Malzeme Seçiniz!"
+            values={malzemeler}
+            value={selectedMalzeme || { id: '', name: '' }}
+            onChange={(e) => setSelectedMalzeme(e.target.value)}
+          />
+          <button type="button" className="btn btn-primary ms-2" onClick={malzemeEkle}>Ekle</button>
+        </div>
+
+        {errorMessage && (
+            <div className="alert alert-danger">
+              {errorMessage}
+            </div>
+          )}
+
+        {
+          malzemeList.length != 0 && <div>
+            <table className="table text-start align-middle table-bordered mb-0">
+              <thead>
+                  <tr className="text-dark">
+                      <th scope="col">Parça Adı</th>
+                      <th scope="col">Stok No</th>
+                      <th scope="col">Parça No</th>
+                      <th scope="col">Miktar</th>
+                      <th scope="col">Sarf Yeri</th>
+                      <th scope="col">Tedarik Yeri</th>
+                      <th scope="col">Fiyatı</th>
+                      <th scope="col"></th>
+                  </tr>
+              </thead>
+              <tbody>
+                {malzemeList.map((malzeme,index) =>
+                  <tr key={index}>
+                      <td>{malzeme.name}</td>
+                      <td>{malzeme.stokNo}</td>
+                      <td>{malzeme.parcaNo}</td>
+                      <td className="d-flex">{malzeme.miktar} / <input className="form-control" value={malzeme.girilenMiktar } style={{width:90,marginLeft:5,height:26}} onChange={(e)=> malzemeMiktarChange(e,index)} /></td>
+                      <td>{malzeme.sarfYeri}</td>
+                      <td>{malzeme.tedarikYeri}</td>
+                      <td>{malzeme.fiyati}</td>
+
+                      <td style={{width:30}}>
+                        <button className="btn btn-sm" onClick={() => malzemeSil(malzeme.id)}>
+                          <i className="fa fa-times"></i>
+                        </button>
+                      </td>
+                  </tr>
+                )}
+              </tbody>
+          </table>
+
+          </div>
+        }
       </div>
 
       <div>

@@ -56,7 +56,8 @@ const create = () => {
       dokuman TEXT,
       periyod INTEGER,
       personel INTEGER,
-      yonetici INTEGER
+      yonetici INTEGER,
+      malzemeler TEXT
 
     )`);
 

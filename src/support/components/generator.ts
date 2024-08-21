@@ -50,6 +50,18 @@ function generatePdfBakim(obj:{
   doc.text(obj.bitisTarihi +" / "+ obj.bitisSaati, 160, 55);
   doc.text(obj.periyod, 250, 55);
 
+  obj.malzemeler.forEach((malzeme,index) => {
+    doc.text(index+1+"", 10, 77 + ( index * 6));
+    doc.text(malzeme.name, 21, 77 + ( index * 6));
+    doc.text(malzeme.stokNo, 66, 77 + ( index * 6));
+    doc.text(malzeme.parcaNo, 96, 77 + ( index * 6));
+    doc.text(malzeme.girilenMiktar, 139, 77 + ( index * 6));
+    doc.text(malzeme.sarfYeri, 169, 77 + ( index * 6));
+    doc.text(malzeme.tedarikYeri, 229, 77 + ( index * 6));
+    doc.text(malzeme.fiyati+"", 259, 77 + ( index * 6));
+  });
+
+
   doc.text(obj.dokuman , 10, 105);
   doc.text(obj.aciklama, 10, 139);
 
