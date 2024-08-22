@@ -61,6 +61,23 @@ const create = () => {
 
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS faults (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      birlik INTEGER,
+      sistem INTEGER,
+      kontrolNo TEXT,
+      arizaNo TEXT,
+      baslangicTarihi DATETIME,
+      bitisTarihi DATETIME,
+      aciklama TEXT,
+      dokuman TEXT,
+      ariza TEXT,
+      personel INTEGER,
+      yonetici INTEGER,
+      malzemeler TEXT
+
+    )`);
+
 
 }
 

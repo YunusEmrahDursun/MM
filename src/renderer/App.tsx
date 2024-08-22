@@ -8,7 +8,8 @@ import './statics/styles/bootstrap-min.css';
 import './statics/styles/style.css';
 
 import Home from '../Pages/Home';
-import Maintenance from '../Pages/Maintenance/';
+import Maintenance from '../Pages/Maintenance';
+import Fault from '../Pages/Fault';
 import NotFound from '../Pages/NotFound';
 import SideBar from './components/SideBar';
 import Header from './components/Header';
@@ -34,7 +35,8 @@ const Workspace = () => {
           <div className="container-fluid pt-4 px-4">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/createMaintenance" element={<Maintenance />} />
+              <Route path="/maintenance" element={<Maintenance />} />
+              <Route path="/fault" element={<Fault />} />
               <Route path="/sides" element={<Sides />} />
               <Route path="/systems" element={<Systems />} />
               <Route path="/periyods" element={<Periyods />} />

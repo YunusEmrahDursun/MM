@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { com, Layout, Select, generatePdfBakim } from "support";
+import { com, Layout, Select, generatePdfAriza } from "support";
 import { toast } from 'react-toastify';
 import moment from "moment";
 const initialForm = {
   name:'',
   birlik:{name:'', id:''},
   sistem:{name:'', id:'', shortName:''},
-  periyod:{name:'', id:''},
   kontrolNo:'',
   baslangicTarihi: moment().format('DD.MM.YYYY'),
   baslangicSaati:'',
@@ -14,8 +13,10 @@ const initialForm = {
   bitisSaati:'',
   dokuman:'',
   aciklama:'',
+  ariza:'',
   personel:{name:'', id:'', title:''},
   yonetici:{name:'', id:'', title:''},
+  arizaNo:'',
   malzemeler:[]
 };
 interface propsType{
@@ -26,7 +27,6 @@ function Form(props:propsType) {
   const [form, setForm] = useState(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
   const [sistemler, setSistemler] = useState<null | []>(null);
-  const [periyotlar, setPeriyotlar] = useState<null | []>(null);
   const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
   const [yoneticiler, setYoneticiler] = useState<null | []>(null);
   const [malzemeler, setMalzemeler] = useState<null | []>(null);
@@ -42,11 +42,10 @@ function Form(props:propsType) {
     Promise.all([
       com.sql({ type: 'selectAll', tableName: 'sides' }),
       com.sql({ type: 'selectAll', tableName: 'systems' }),
-      com.sql({ type: 'selectAll', tableName: 'periyods' }),
       com.sql({ type: 'selectAll', tableName: 'technicians' }),
       com.sql({ type: 'selectAll', tableName: 'officers' }),
       com.sql({ type: 'selectAll', tableName: 'stocks' }),
-    ]).then(([sidesRes, systemsRes, periyodsRes, techniciansRes, officersRes, stocksRes]) => {
+    ]).then(([sidesRes, systemsRes,  techniciansRes, officersRes, stocksRes]) => {
       let temp;
       if(props.select){
         temp = {
@@ -55,7 +54,6 @@ function Form(props:propsType) {
           sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
-          periyod: periyodsRes.find(i=> i.id == props.select.periyod ) || { id: '' },
           baslangicTarihi:moment(props.select.baslangicTarihi).format("DD.MM.YYYY"),
           baslangicSaati:moment(props.select.baslangicTarihi).format("HH:mm"),
           bitisTarihi:moment(props.select.bitisTarihi).format("DD.MM.YYYY"),
@@ -83,7 +81,6 @@ function Form(props:propsType) {
 
       setBirlikler(sidesRes);
       setSistemler(systemsRes);
-      setPeriyotlar(periyodsRes);
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
       setMalzemeler(stocksRes);
@@ -97,19 +94,20 @@ function Form(props:propsType) {
   }
 
   const generateClick = () => {
-    generatePdfBakim({
+    generatePdfAriza({
       birlikAdi:form.birlik.name,
       sistemAdi:form.sistem.name,
       kontrolNo:form.kontrolNo,
+      arizaNo:form.arizaNo,
 
       baslangicTarihi:form.baslangicTarihi,
       baslangicSaati:form.baslangicSaati,
       bitisTarihi:form.bitisTarihi,
       bitisSaati:form.bitisSaati,
 
+      ariza:form.ariza,
       aciklama:form.aciklama,
       dokuman:form.dokuman,
-      periyod:form.periyod.name,
       personel:form.personel.name,
       yonetici:form.yonetici.name,
       personelKase:form.personel.title,
@@ -124,18 +122,19 @@ function Form(props:propsType) {
       type:'insert',
       data:{
         kontrolNo:form.kontrolNo,
+        arizaNo:form.arizaNo,
         birlik:form.birlik.id,
         sistem:form.sistem.id,
         personel:form.personel.id,
         yonetici:form.yonetici.id,
-        periyod:form.periyod.id,
+        ariza:form.ariza,
         aciklama:form.aciklama,
         dokuman:form.dokuman,
         baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
         bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
         malzemeler:JSON.stringify(malzemeList)
       },
-      tableName:'maintenances'
+      tableName:'faults'
     }).then(i=> {
       props.afterSaved();
       toast("Kaydedildi!")
@@ -233,8 +232,8 @@ function Form(props:propsType) {
             <input className="form-control"  value={form.kontrolNo} onChange={(e)=> formChange(e,'kontrolNo')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
-          <label className="form-label">Periyod</label>
-          <Select placeHolder="Periyod Seçiniz!" values={periyotlar} value={form.periyod} onChange={(e)=> formChange(e,'periyod')}/>
+          <label className="form-label">Arıza No</label>
+          <input className="form-control"  value={form.arizaNo} onChange={(e)=> formChange(e,'arizaNo')}/>
         </div>
       </div>
 
@@ -258,6 +257,10 @@ function Form(props:propsType) {
       </div>
 
       <div className="row">
+        <div className="col-sm-12 col-xl-12 mb-3">
+            <label className="form-label">Arıza</label>
+            <textarea className="form-control"  value={form.ariza} onChange={(e)=> formChange(e,'ariza')}/>
+        </div>
         <div className="col-sm-12 col-xl-12 mb-3">
             <label className="form-label">Döküman</label>
             <textarea className="form-control"  value={form.dokuman} onChange={(e)=> formChange(e,'dokuman')}/>
