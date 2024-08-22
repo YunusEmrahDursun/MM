@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Select.css'; // CSS dosyanı import et
+import './Select.css';
 
 interface propsType {
   values: any[] | null;
@@ -11,14 +11,14 @@ interface propsType {
 const Select = (props: propsType) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null); // Dropdown'u referansla
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectChange = (e) => {
     if (props.values) {
       const obj = { target: { value: null } };
       obj.target.value = props.values.find(i => i.id === e.target.value) || { id: '' };
       props.onChange(obj);
-      setIsOpen(false); // Seçim yapıldığında dropdown'ı kapat
+      setIsOpen(false);
     }
   };
 
@@ -33,7 +33,6 @@ const Select = (props: propsType) => {
     ? props.values.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()))
     : [];
 
-  // Dropdown dışında bir yere tıklandığında dropdown'ı kapat
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -49,10 +48,10 @@ const Select = (props: propsType) => {
 
   return (
     <div className="select-container" ref={dropdownRef}>
-      <div className="dropdown">
-        <div className="dropdown-hdr">
+      <div className="select-dropdown">
+        <div className="select-dropdown-header">
           <button
-            className="dropdown-tggle form-select"
+            className="select-dropdown-toggle form-select"
             onClick={() => setIsOpen(!isOpen)}
           >
             {props.value.name || props.placeHolder}
@@ -62,10 +61,10 @@ const Select = (props: propsType) => {
           )}
         </div>
         {isOpen && (
-          <div className="dropdown-menu show">
+          <div className="select-dropdown-menu dropdown-menu show">
             <input
               type="text"
-              className="form-control dropdown-search"
+              className="form-control select-dropdown-search"
               placeholder="Ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -74,14 +73,14 @@ const Select = (props: propsType) => {
               filteredValues.map((i: any) => (
                 <button
                   key={i.id}
-                  className="dropdown-item"
+                  className="select-dropdown-item dropdown-item"
                   onClick={() => selectChange({ target: { value: i.id } })}
                 >
                   {i.name}
                 </button>
               ))
             ) : (
-              <button className="dropdown-item disabled">Sonuç bulunamadı</button>
+              <button className="select-dropdown-item dropdown-item disabled">Sonuç bulunamadı</button>
             )}
           </div>
         )}
