@@ -28,7 +28,7 @@ const List = (props:propsType) => {
     const getData = () => {
       com.sql({
         type:'selectAll',
-        tableName:'maintenances'
+        tableName:'faults'
       }).then(res=> setData(res.map(i=>{
         const f:any = sistemler && sistemler.find((s:any)=> s.id == i.sistem );
         return {
@@ -47,7 +47,7 @@ const List = (props:propsType) => {
 
       com.sql({
         type:'remove',
-        tableName:'maintenances',
+        tableName:'faults',
         where:{id:item.id}
       }).then(res=>{
         getData();
