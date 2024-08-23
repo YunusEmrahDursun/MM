@@ -19,7 +19,9 @@ class Database {
             db.close();
           });
     }
-
+    customQuery = async ({query}) => {
+      return this.query(query);
+    }
     selectAll = async ({tableName,extra="",countRow=false}) => {
         if(extra==null){
             extra="";
