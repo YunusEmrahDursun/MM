@@ -4,7 +4,7 @@ import logo from '../../../assets/img/logo.png';
 import { useGlobalState } from "./../../support/index";
 
 const menu = [
-  { text: 'AnaEkran', icon: 'fa-tachometer-alt', link: '/' },
+  { text: 'Ana Ekran', icon: 'fa-tachometer-alt', link: '/' },
   {
     text: 'Tanımlar', icon: 'fa-cogs', subrows: [
       { text: 'Birlikler', link: '/sides' },

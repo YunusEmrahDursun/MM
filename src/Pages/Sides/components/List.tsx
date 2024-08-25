@@ -49,9 +49,9 @@ const List = (props:propsType) => {
             <Table
                 header={
                     [
-                        { label:'#',key:'id'},
-                        { label:'Ad',key:'name'},
-                        { label:'Kod',key:'shortName'},
+                        { label:'#',key:'id',type:'number'},
+                        { label:'Ad',key:'name',type:'string'},
+                        { label:'Kod',key:'shortName',type:'string'},
                         { label:'',key:'button'},
                     ]
                 }

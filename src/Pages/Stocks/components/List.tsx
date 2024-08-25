@@ -49,10 +49,10 @@ const List = (props:propsType) => {
             <Table
                 header={
                     [
-                        { label:'#',key:'id'},
-                        { label:'Ad',key:'name'},
-                        { label:'Parça No',key:'parcaNo'},
-                        { label:'Miktar',key:'miktar'},
+                        { label:'#',key:'id',type:'number'},
+                        { label:'Ad',key:'name',type:'string'},
+                        { label:'Parça No',key:'parcaNo',type:'string'},
+                        { label:'Miktar',key:'miktar',type:'string'},
                         { label:'',key:'button'},
                     ]
                 }
