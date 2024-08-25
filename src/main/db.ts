@@ -33,6 +33,7 @@ class Database {
         return this.query(query);
     }
     selectQuery = async ({where={},tableName,mode="AND",extra="",countRow=false}) => {
+
         if(!tableName || tableName==""){
             throw "tabloismibulunamadi";
         }

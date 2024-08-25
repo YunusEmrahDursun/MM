@@ -77,7 +77,21 @@ const create = () => {
 
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS pass (
+      password TEXT
+    )`);
 
+    db.get(`SELECT COUNT(*) as count FROM pass`, (err, row) => {
+      if (err) {
+          console.error('Error checking pass table:', err.message);
+      } else if (row.count === 0) {
+          db.run(`INSERT INTO pass (password) VALUES (?)`, ['Z2FsYWRyaWVs'], (err) => {
+              if (err) {
+                  console.error('Error inserting into pass table:', err.message);
+              }
+          });
+      }
+  });
 }
 
 export default { create }

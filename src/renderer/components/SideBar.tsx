@@ -1,26 +1,38 @@
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../assets/img/logo.png';
 import { useGlobalState } from "./../../support/index";
 
-const menu = [
-  { text: 'Ana Ekran', icon: 'fa-tachometer-alt', link: '/' },
-  {
-    text: 'Tanımlar', icon: 'fa-cogs', subrows: [
-      { text: 'Birlikler', link: '/sides' },
-      { text: 'Sistemler', link: '/systems' },
-      { text: 'Periyodlar', link: '/periyods' },
-      { text: 'Teknisyenler', link: '/technicians' },
-      { text: 'Görevli Personel', link: '/officers' },
-      { text: 'Malzeme', link: '/stocks' },
-    ]
-  },
-];
 export default () => {
 
   const location = useLocation();
   const { state, dispatch } = useGlobalState();
+  const [menu, setMenu] = useState<any>([]);
   const isActive = (path) => location.pathname === path;
+
+  useEffect(() => {
+    if(state.admin){
+      setMenu([
+        { text: 'Ana Ekran', icon: 'fa-tachometer-alt', link: '/' },
+        { text: 'Malzeme', icon: 'fa-window-maximize', link: '/stocks' },
+        {
+          text: 'Tanımlar', icon: 'fa-cogs', subrows: [
+            { text: 'Birlikler', link: '/sides' },
+            { text: 'Sistemler', link: '/systems' },
+            { text: 'Periyodlar', link: '/periyods' },
+            { text: 'Teknisyenler', link: '/technicians' },
+            { text: 'Görevli Personel', link: '/officers' },
+
+          ]
+        }
+      ])
+    }else{
+      setMenu([
+        { text: 'Ana Ekran', icon: 'fa-tachometer-alt', link: '/' },
+        { text: 'Malzeme', icon: 'fa-window-maximize', link: '/stocks' },
+      ])
+    }
+  }, [state.admin])
 
   return (
     <div className={"sidebar pe-4 pb-3 "+ (state.sidebar ? 'open' : '')}>

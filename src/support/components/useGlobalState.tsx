@@ -2,22 +2,27 @@ import React, { createContext, useReducer, useContext, Dispatch, ReactNode } fro
 
 export interface StateType {
 	sidebar: boolean;
-  }
-  
+  admin: boolean;
+}
+
 export type Action =
-| { type: 'TOGGLE_SIDEBAR'; value: boolean };
+| { type: 'TOGGLE_SIDEBAR'; value: boolean } | { type: 'ADMIN'; value: boolean } ;
 
 const initialState: StateType = {
 	sidebar: false,
+  admin:false
 };
 
 const reducer = (state: StateType, action: Action): StateType => {
 	switch (action.type) {
 	  case 'TOGGLE_SIDEBAR':
-		return { ...state, sidebar: action.value };
+		  return { ...state, sidebar: action.value };
+    case 'ADMIN':
+      return { ...state, admin: true };
 	  default:
-		return state;
+		  return state;
 	}
+
 };
 
 interface StateContextType {
@@ -33,14 +38,14 @@ interface ProviderProps {
 
 export const Provider = ({ children }: ProviderProps) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
-  
+
 	return (
 	  <StateContext.Provider value={{ state, dispatch }}>
 		{children}
 	  </StateContext.Provider>
 	);
 };
-  
+
 export const useGlobalState = () => {
 	const context = useContext(StateContext);
 	if (context === undefined) {
