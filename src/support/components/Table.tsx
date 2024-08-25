@@ -84,39 +84,37 @@ const Table = (props: PropsType) => {
                                 </th>
                             </tr>
                             <tr>
-                                {props.header.map((h, index) => {
-                                    return <>
-                                      { openFilter ? <th key={index}>
-                                        {h.type === 'string' && (
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={filters[h.key] || ''}
-                                                onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
-                                            />
-                                        )}
-                                        {h.type === 'number' && (
-                                            <input
-                                                className="form-control"
-                                                type="number"
-                                                value={filters[h.key] || ''}
-                                                onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
-                                            />
-                                        )}
-                                        {h.type === 'date' && (
-                                            <input
-                                                placeholder="gg.aa.yyyy"
-                                                className="form-control"
-                                                value={filters[h.key] || ''}
-                                                onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
-                                            />
-                                        )}
-                                        { h.key == 'button' && <button className="btn btn-square btn-outline-danger ms-3" onClick={handleClearFilters}>
-                                          <i className="fa fa-trash"></i>
-                                        </button>}
-                                      </th> : <></>}
-                                    </>
-                                })}
+                                {openFilter && props.header.map((h, index) => (
+                                  <th key={index}>
+                                    {h.type === 'string' && (
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={filters[h.key] || ''}
+                                            onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
+                                        />
+                                    )}
+                                    {h.type === 'number' && (
+                                        <input
+                                            className="form-control"
+                                            type="number"
+                                            value={filters[h.key] || ''}
+                                            onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
+                                        />
+                                    )}
+                                    {h.type === 'date' && (
+                                        <input
+                                            placeholder="gg.aa.yyyy"
+                                            className="form-control"
+                                            value={filters[h.key] || ''}
+                                            onChange={(e) => handleFilterChange(h.key, e.target.value, h.type)}
+                                        />
+                                    )}
+                                    { h.key == 'button' && <button className="btn btn-square btn-outline-danger ms-3" onClick={handleClearFilters}>
+                                      <i className="fa fa-trash"></i>
+                                    </button>}
+                                  </th>
+                                ))}
                             </tr>
                         </thead>
                         <tbody>

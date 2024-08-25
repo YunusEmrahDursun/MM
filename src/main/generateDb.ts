@@ -44,7 +44,6 @@ const create = () => {
         name TEXT,
         title TEXT
     )`);
-
     db.run(`CREATE TABLE IF NOT EXISTS maintenances (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       birlik INTEGER,

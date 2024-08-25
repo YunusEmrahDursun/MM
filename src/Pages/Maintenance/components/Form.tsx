@@ -23,7 +23,7 @@ interface propsType{
   select:any
 }
 function Form(props:propsType) {
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState<any>(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
   const [sistemler, setSistemler] = useState<null | []>(null);
   const [periyotlar, setPeriyotlar] = useState<null | []>(null);
@@ -119,27 +119,50 @@ function Form(props:propsType) {
     })
   }
   const saveClick = () => {
+    if(form.id){
+      com.sql({
+        type:'update',
+        data:{
+          kontrolNo:form.kontrolNo,
+          birlik:form.birlik.id,
+          sistem:form.sistem.id,
+          personel:form.personel.id,
+          yonetici:form.yonetici.id,
+          periyod:form.periyod.id,
+          aciklama:form.aciklama,
+          dokuman:form.dokuman,
+          baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+          bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+          malzemeler:JSON.stringify(malzemeList)
+        },
+        tableName:'maintenances'
+      }).then(i=> {
+        props.afterSaved();
+        toast("Kaydedildi!")
+      })
+    }else{
+      com.sql({
+        type:'insert',
+        data:{
+          kontrolNo:form.kontrolNo,
+          birlik:form.birlik.id,
+          sistem:form.sistem.id,
+          personel:form.personel.id,
+          yonetici:form.yonetici.id,
+          periyod:form.periyod.id,
+          aciklama:form.aciklama,
+          dokuman:form.dokuman,
+          baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+          bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
+          malzemeler:JSON.stringify(malzemeList)
+        },
+        tableName:'maintenances'
+      }).then(i=> {
+        props.afterSaved();
+        toast("Kaydedildi!")
+      })
+    }
 
-    com.sql({
-      type:'insert',
-      data:{
-        kontrolNo:form.kontrolNo,
-        birlik:form.birlik.id,
-        sistem:form.sistem.id,
-        personel:form.personel.id,
-        yonetici:form.yonetici.id,
-        periyod:form.periyod.id,
-        aciklama:form.aciklama,
-        dokuman:form.dokuman,
-        baslangicTarihi:moment(form.baslangicTarihi+'/'+form.baslangicSaati, "DD.MM.YYYY/HH:mm").valueOf(),
-        bitisTarihi:moment(form.bitisTarihi+'/'+form.bitisSaati, "DD.MM.YYYY/HH:mm").valueOf(),
-        malzemeler:JSON.stringify(malzemeList)
-      },
-      tableName:'maintenances'
-    }).then(i=> {
-      props.afterSaved();
-      toast("Kaydedildi!")
-    })
   }
   const formChange = (e, key) => {
     const temp = {...form};
