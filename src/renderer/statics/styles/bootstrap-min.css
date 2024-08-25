@@ -7010,14 +7010,14 @@ fieldset:disabled .btn {
 .sticky-top {
   position: sticky;
   top: 0;
-  z-index: 1020
+  z-index: 500
 }
 
 @media (min-width: 576px) {
   .sticky-sm-top {
     position: sticky;
     top: 0;
-    z-index: 1020
+    z-index: 500
   }
 }
 
@@ -7025,7 +7025,7 @@ fieldset:disabled .btn {
   .sticky-md-top {
     position: sticky;
     top: 0;
-    z-index: 1020
+    z-index: 500
   }
 }
 
@@ -7033,7 +7033,7 @@ fieldset:disabled .btn {
   .sticky-lg-top {
     position: sticky;
     top: 0;
-    z-index: 1020
+    z-index: 500
   }
 }
 
@@ -7041,7 +7041,7 @@ fieldset:disabled .btn {
   .sticky-xl-top {
     position: sticky;
     top: 0;
-    z-index: 1020
+    z-index: 500
   }
 }
 
@@ -7049,7 +7049,7 @@ fieldset:disabled .btn {
   .sticky-xxl-top {
     position: sticky;
     top: 0;
-    z-index: 1020
+    z-index: 500
   }
 }
 

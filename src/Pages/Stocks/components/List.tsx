@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { com, Table } from 'support';
+import { com, Table, Modal } from 'support';
 
 interface propsType{
   selectItem:Function
@@ -7,7 +7,8 @@ interface propsType{
 
 const List = (props:propsType) => {
     const [data, setData] = useState([]);
-
+    const [showModal, setShowModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<any>(null);
     useEffect(() => {
       if(props.selectItem){
 
@@ -25,24 +26,33 @@ const List = (props:propsType) => {
         ...i,
         button: <div className='float-end'>
           <button type="button" className="btn btn-square btn-outline-primary m-2" onClick={()=> props.selectItem(i)}><i className="fa fa-edit"></i></button>
-          <button type="button" className="btn btn-square btn-outline-danger m-2" onClick={()=> deleteClick(i)}><i className="fa fa-trash"></i></button>
+          <button type="button" className="btn btn-square btn-outline-danger m-2" onClick={()=> handleDeleteClick(i)}><i className="fa fa-trash"></i></button>
         </div>
       }))));
     }
-
-    const deleteClick = (item) => {
-
-      com.sql({
-        type:'remove',
-        tableName:'stocks',
-        where:{id:item.id}
-      }).then(res=>{
-        getData();
-      })
+    const handleDeleteClick = (item) => {
+      setItemToDelete(item);
+      setShowModal(true);
+    };
+    const handleConfirmDelete = () => {
+      if (itemToDelete){
+        com.sql({
+          type:'remove',
+          tableName:'stocks',
+          where:{id:itemToDelete.id}
+        }).then(res=>{
+          setShowModal(false);
+          setItemToDelete(null);
+          getData();
+        })
+      }
 
 
     }
-
+    const handleCloseModal = () => {
+      setShowModal(false);
+      setItemToDelete(null);
+    };
     return (
         <>
             <button  onClick={()=>props.selectItem(null)} type="button" className="float-end btn btn-primary rounded-pill m-2"><i className="fa fa-plus me-2"></i>Ekle</button>
@@ -57,6 +67,13 @@ const List = (props:propsType) => {
                     ]
                 }
                 data={data}/>
+            <Modal
+              show={showModal}
+              onClose={handleCloseModal}
+              onConfirm={handleConfirmDelete}
+              title="Silme Onayı"
+              message="Bu öğeyi silmek istediğinize emin misiniz?"
+            />
         </>
     )
 }
