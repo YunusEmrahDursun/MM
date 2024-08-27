@@ -23,16 +23,16 @@ function Home() {
 
   const getData = () => {
     Promise.all([
-      com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM maintenances;' }),
-      com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM faults;' }),
+      com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM maintenances where deleted = 0;' }),
+      com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM faults where deleted = 0;' }),
       com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch')) AS ay, COUNT(*) AS bakim_sayisi
         FROM maintenances
-        WHERE strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
+        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
         GROUP BY ay
         ORDER BY ay;` }),
       com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch')) AS ay, COUNT(*) AS bakim_sayisi
         FROM faults
-        WHERE strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
+        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
         GROUP BY ay
         ORDER BY ay;` }),
     ]).then(([maintenances, faults, maintenancesAylik, faultsAylik]) => {

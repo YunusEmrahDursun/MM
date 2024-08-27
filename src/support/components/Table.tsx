@@ -71,11 +71,9 @@ const Table = (props: PropsType) => {
                         <thead>
                             <tr>
                                 {props.header.map((h, index) => (
-                                   <>
-                                      { h.key != 'button' && <th key={index} scope="col">
+                                      h.key != 'button' && <th key={index} scope="col">
                                           {h.label}
-                                      </th>}
-                                   </>
+                                      </th>
                                 ))}
                                 <th>
                                   <button className="btn btn-square btn-outline-primary" onClick={()=> setOpenFilter(!openFilter)}>

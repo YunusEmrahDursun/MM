@@ -120,6 +120,7 @@ function Form(props:propsType) {
     if(form.id){
       com.sql({
         type:'update',
+        where:{id:form.id},
         data:{
           kontrolNo:form.kontrolNo,
           arizaNo:form.arizaNo,
@@ -158,6 +159,14 @@ function Form(props:propsType) {
         },
         tableName:'faults'
       }).then(i=> {
+        malzemeList.forEach(malzeme=> {
+          try {
+            const newMiktar = malzeme.miktar - malzeme.girilenMiktar;
+            com.sql({type:'update',where:{id:malzeme.id},data:{miktar:newMiktar},tableName:'stocks'})
+          } catch (error) {
+
+          }
+        })
         props.afterSaved();
         toast("Kaydedildi!")
       })

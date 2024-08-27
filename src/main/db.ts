@@ -29,7 +29,7 @@ class Database {
         if(!tableName || tableName==""){
             throw "tabloismibulunamadi";
         }
-        var query=`SELECT ${ countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${tableName} WHERE 1=1 ${extra};${ countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
+        var query=`SELECT ${ countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${tableName} WHERE 1=1 and deleted = 0 ${extra};${ countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
         return this.query(query);
     }
     selectQuery = async ({where={},tableName,mode="AND",extra="",countRow=false}) => {
@@ -216,6 +216,21 @@ class Database {
         return this.query(query,[data]);
 
     }
+
+    setDeleted = async ({where={},tableName,mode="AND"}) => {
+      if(!tableName || tableName==""){
+          throw "tabloismibulunamadi";
+      }
+      if( Object.keys(where).length==0){
+          throw "sorgualanieksik";
+      }
+      var query="";
+      query=setSilindiConverter(tableName,where,mode);
+      if(query==""){
+          throw "sorgubulunamadi";
+      }
+      return this.query(query,Object.keys(where).map(y=> where[y]));
+  }
 }
 
 
@@ -227,7 +242,7 @@ const removeConverter = (_tableName:string,_where:object,_mode ) => {
     return `DELETE FROM ${_tableName} WHERE ${Object.keys(_where).map(x=> x+"= ? ").join(_mode+" ")}`;
 }
 const selectQueryConverter = (_tableName:string,_where:object,_mode,_extra:string,_countRow:boolean) => {
-    return `SELECT ${ _countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${_tableName} as g WHERE ( ${Object.keys(_where).map(x=> "g."+x+"= ? ").join(_mode+" ")} ) AND 1=1 ${_extra} ; ${ _countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
+    return `SELECT ${ _countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${_tableName} as g WHERE ( ${Object.keys(_where).map(x=> "g."+x+"= ? ").join(_mode+" ")} ) AND 1=1 AND deleted = 0 ${_extra} ; ${ _countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
 }
 const selectLikeConverter = (_tableName:string,_where:object,_mode,_extra:string,_countRow:boolean) => {
     return `SELECT ${ _countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${_tableName} WHERE ( ${ _where && Object.keys(_where).length != 0 ? Object.keys(_where).map(x=> x+" LIKE ? ").join(_mode+" "):"1=1" } ) AND 1=1 ${_extra} ; ${ _countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
@@ -244,6 +259,7 @@ const updateConverter = (_tableName:string,_object:object,_where:object,_mode) =
 const selectInConverter = (_tableName:string,_colName:string,_extra:string,_countRow :boolean,_not:"NOT"| "" ) => {
     return `SELECT ${ _countRow ? "SQL_CALC_FOUND_ROWS" : "" } * FROM ${_tableName} WHERE ${_colName} ${_not} IN (?) AND 1=1 ${_extra} ; ${ _countRow ? "SELECT FOUND_ROWS() AS max;" : "" }`;
 }
-
-
+const setSilindiConverter = (_tableName:string,_where:object,_mode:"AND" | "OR") => {
+    return `UPDATE ${_tableName} SET deleted=1 WHERE ${Object.keys(_where).map(x=> x+"= ? ").join(_mode+" ")}`;
+}
 export default new Database();

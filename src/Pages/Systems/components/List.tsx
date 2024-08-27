@@ -38,7 +38,7 @@ const List = (props:propsType) => {
     const handleConfirmDelete  = () => {
       if (itemToDelete){
         com.sql({
-          type:'remove',
+          type:'setDeleted',
           tableName:'systems',
           where:{id:itemToDelete.id}
         }).then(res=>{

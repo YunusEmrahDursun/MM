@@ -32,6 +32,7 @@ function Form(props:propsType) {
   const [malzemeler, setMalzemeler] = useState<null | []>(null);
   const [selectedMalzeme, setSelectedMalzeme] = useState<any>(null);
   const [malzemeList, setMalzemeList] = useState<any[]>([]);
+  const [tempMalzemeList, setTempMalzemeList] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -62,7 +63,17 @@ function Form(props:propsType) {
           bitisSaati:moment(props.select.bitisTarihi).format("HH:mm"),
         }
         try {
-          setMalzemeList(JSON.parse(props.select.malzemeler))
+          const tempMalzeme = JSON.parse(props.select.malzemeler).map(m=>{
+            const found = stocksRes.find(s=> s.id == m.id)
+            return {
+              ...m,
+              prevGirilenMiktar :m.girilenMiktar,
+              miktar: found ? found.miktar : m.miktar
+
+            }
+          })
+          setMalzemeList(tempMalzeme);
+          setTempMalzemeList(tempMalzeme);
         } catch (error) {
 
         }
@@ -122,6 +133,7 @@ function Form(props:propsType) {
     if(form.id){
       com.sql({
         type:'update',
+        where:{id:form.id},
         data:{
           kontrolNo:form.kontrolNo,
           birlik:form.birlik.id,
@@ -137,6 +149,47 @@ function Form(props:propsType) {
         },
         tableName:'maintenances'
       }).then(i=> {
+
+        malzemeList.forEach((yeniMalzeme) => {
+          try {
+            if(malzemeler){
+
+              const eskiMalzeme:any = malzemeler.find((malzeme:any) => malzeme.id === yeniMalzeme.id);
+              if (eskiMalzeme) {
+                const miktarFarkı:any = parseFloat(yeniMalzeme.girilenMiktar) - parseFloat(yeniMalzeme.prevGirilenMiktar);
+
+                com.sql({
+                  type: 'update',
+                  where: { id: yeniMalzeme.id },
+                  data: { miktar: parseFloat(eskiMalzeme.miktar) - parseFloat(miktarFarkı) },
+                  tableName: 'stocks'
+                }).catch(error => {
+                });
+              }
+
+            }
+          } catch (error) {
+
+          }
+
+        });
+
+        tempMalzemeList.forEach(t=>{
+          if( !malzemeList.some(m=> m.id == t.id ) ){
+            try {
+              com.sql({
+                type: 'update',
+                where: { id: t.id },
+                data: { miktar: parseFloat(t.girilenMiktar) + parseFloat(t.miktar) },
+                tableName: 'stocks'
+              }).catch(error => {
+              });
+            } catch (error) {
+
+            }
+          }
+        })
+
         props.afterSaved();
         toast("Kaydedildi!")
       })
@@ -158,6 +211,14 @@ function Form(props:propsType) {
         },
         tableName:'maintenances'
       }).then(i=> {
+        malzemeList.forEach(malzeme=> {
+          try {
+            const newMiktar = parseFloat(malzeme.miktar) - parseFloat(malzeme.girilenMiktar);
+            com.sql({type:'update',where:{id:malzeme.id},data:{miktar:newMiktar},tableName:'stocks'})
+          } catch (error) {
+
+          }
+        })
         props.afterSaved();
         toast("Kaydedildi!")
       })

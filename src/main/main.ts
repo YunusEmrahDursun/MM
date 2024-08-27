@@ -32,7 +32,6 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.handle('ipc-com', async (event, args) => {
   try {
     const obj = JSON.parse(args);
-
     //@ts-ignore
     return JSON.stringify(await db[obj.type](obj));
   } catch (error) {
