@@ -156,12 +156,12 @@ function Form(props:propsType) {
 
               const eskiMalzeme:any = malzemeler.find((malzeme:any) => malzeme.id === yeniMalzeme.id);
               if (eskiMalzeme) {
-                const miktarFarkı:any = parseFloat(yeniMalzeme.girilenMiktar) - parseFloat(yeniMalzeme.prevGirilenMiktar);
+                const miktarFarkı:any = parseInt(yeniMalzeme.girilenMiktar) - parseInt(yeniMalzeme.prevGirilenMiktar);
 
                 com.sql({
                   type: 'update',
                   where: { id: yeniMalzeme.id },
-                  data: { miktar: parseFloat(eskiMalzeme.miktar) - parseFloat(miktarFarkı) },
+                  data: { miktar: parseInt(eskiMalzeme.miktar) - parseInt(miktarFarkı) },
                   tableName: 'stocks'
                 }).catch(error => {
                 });
@@ -180,7 +180,7 @@ function Form(props:propsType) {
               com.sql({
                 type: 'update',
                 where: { id: t.id },
-                data: { miktar: parseFloat(t.girilenMiktar) + parseFloat(t.miktar) },
+                data: { miktar: parseInt(t.girilenMiktar) + parseInt(t.miktar) },
                 tableName: 'stocks'
               }).catch(error => {
               });
@@ -213,7 +213,7 @@ function Form(props:propsType) {
       }).then(i=> {
         malzemeList.forEach(malzeme=> {
           try {
-            const newMiktar = parseFloat(malzeme.miktar) - parseFloat(malzeme.girilenMiktar);
+            const newMiktar = parseInt(malzeme.miktar) - parseInt(malzeme.girilenMiktar);
             com.sql({type:'update',where:{id:malzeme.id},data:{miktar:newMiktar},tableName:'stocks'})
           } catch (error) {
 
