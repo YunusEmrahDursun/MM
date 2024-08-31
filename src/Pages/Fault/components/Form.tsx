@@ -154,37 +154,49 @@ function Form(props:propsType) {
 
               const eskiMalzeme:any = malzemeler.find((malzeme:any) => malzeme.id === yeniMalzeme.id);
               if (eskiMalzeme) {
-                const miktarFarkı:any = parseInt(yeniMalzeme.girilenMiktar) - parseInt(yeniMalzeme.prevGirilenMiktar);
 
-                com.sql({
-                  type: 'update',
-                  where: { id: yeniMalzeme.id },
-                  data: { miktar: parseInt(eskiMalzeme.miktar) - parseInt(miktarFarkı) },
-                  tableName: 'stocks'
-                }).catch(error => {
-                });
+                const gm = parseInt(yeniMalzeme.girilenMiktar);
+                const pm = parseInt(yeniMalzeme.prevGirilenMiktar);
+                const m = parseInt(eskiMalzeme.miktar);
+
+                if( !isNaN(gm) && !isNaN(pm) && !isNaN(m) ){
+                  const mf = gm - pm;
+                  com.sql({ 
+                    data: { miktar: m - mf }, type: 'update',where: { id: yeniMalzeme.id },tableName: 'stocks' }).catch(error => {});
+                }else if(isNaN(gm) && !isNaN(pm) && !isNaN(m) ){
+                  com.sql({
+                    type: 'update',
+                    where: { id: yeniMalzeme.id },
+                    data: { miktar: m + pm },
+                    tableName: 'stocks'
+                  }).catch(error => {});
+                }else if(isNaN(pm) && !isNaN(gm) && !isNaN(m)){
+                  com.sql({
+                    type: 'update',
+                    where: { id: yeniMalzeme.id },
+                    data: { miktar: m - gm },
+                    tableName: 'stocks'
+                  }).catch(error => {});
+                }
+               
               }
-
             }
-          } catch (error) {
-
-          }
+          } catch (error) {}
 
         });
 
         tempMalzemeList.forEach(t=>{
           if( !malzemeList.some(m=> m.id == t.id ) ){
             try {
-              com.sql({
-                type: 'update',
-                where: { id: t.id },
-                data: { miktar: parseInt(t.girilenMiktar) + parseInt(t.miktar) },
-                tableName: 'stocks'
-              }).catch(error => {
-              });
-            } catch (error) {
-
-            }
+              if(!isNaN(parseInt(t.girilenMiktar)) && !isNaN(parseInt(t.miktar))){
+                com.sql({
+                  type: 'update',
+                  where: { id: t.id },
+                  data: { miktar: parseInt(t.girilenMiktar) + parseInt(t.miktar) },
+                  tableName: 'stocks'
+                }).catch(error => { });
+              }
+            } catch (error) { }
           }
         })
         props.afterSaved();
@@ -212,10 +224,10 @@ function Form(props:propsType) {
         malzemeList.forEach(malzeme=> {
           try {
             const newMiktar = malzeme.miktar - malzeme.girilenMiktar;
-            com.sql({type:'update',where:{id:malzeme.id},data:{miktar:newMiktar},tableName:'stocks'})
-          } catch (error) {
-
-          }
+            if(!isNaN(newMiktar)){
+              com.sql({type:'update',where:{id:malzeme.id},data:{miktar:newMiktar},tableName:'stocks'})
+            }
+          } catch (error) { }
         })
         props.afterSaved();
         toast("Kaydedildi!")
