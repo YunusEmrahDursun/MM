@@ -12,6 +12,12 @@ const create = () => {
         deleted INTEGER DEFAULT 0
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS devices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        deleted INTEGER DEFAULT 0
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS sides (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
@@ -53,7 +59,7 @@ const create = () => {
     db.run(`CREATE TABLE IF NOT EXISTS maintenances (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       birlik INTEGER,
-      sistem INTEGER,
+      device INTEGER,
       kontrolNo TEXT,
       baslangicTarihi DATETIME,
       bitisTarihi DATETIME,
@@ -88,19 +94,21 @@ const create = () => {
     db.run(`CREATE TABLE IF NOT EXISTS pass (
       password TEXT,
       deleted INTEGER DEFAULT 0
-    )`);
+    )`,()=>{
+        db.get(`SELECT COUNT(*) as count FROM pass`, (err, row) => {
+            if (err) {
+                console.error('Error checking pass table:', err.message);
+            } else if (row.count === 0) {
+                db.run(`INSERT INTO pass (password) VALUES (?)`, ['Z2FsYWRyaWVs'], (err) => {
+                    if (err) {
+                        console.error('Error inserting into pass table:', err.message);
+                    }
+                });
+            }
+        });
+    })
 
-    db.get(`SELECT COUNT(*) as count FROM pass`, (err, row) => {
-      if (err) {
-          console.error('Error checking pass table:', err.message);
-      } else if (row.count === 0) {
-          db.run(`INSERT INTO pass (password) VALUES (?)`, ['Z2FsYWRyaWVs'], (err) => {
-              if (err) {
-                  console.error('Error inserting into pass table:', err.message);
-              }
-          });
-      }
-  });
+    
 }
 
 export default { create }

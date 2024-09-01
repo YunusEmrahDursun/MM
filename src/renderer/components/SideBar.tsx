@@ -19,6 +19,7 @@ export default () => {
           text: 'Tanımlar', icon: 'fa-cogs', subrows: [
             { text: 'Birlikler', link: '/sides' },
             { text: 'Sistemler', link: '/systems' },
+            { text: 'Cihazlar', link: '/devices' },
             { text: 'Periyodlar', link: '/periyods' },
             { text: 'Teknisyenler', link: '/technicians' },
             { text: 'Görevli Personel', link: '/officers' },

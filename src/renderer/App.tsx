@@ -16,6 +16,7 @@ import Header from './components/Header';
 import { Provider, useGlobalState } from 'support';
 import Sides from '../Pages/Sides';
 import Systems from '../Pages/Systems';
+import Devices from '../Pages/Devices';
 import Periyods from '../Pages/Periyods';
 import Technicians from '../Pages/Technicians';
 import Officers from '../Pages/Officers';
@@ -39,6 +40,7 @@ const Workspace = () => {
               <Route path="/fault" element={<Fault />} />
               <Route path="/sides" element={<Sides />} />
               <Route path="/systems" element={<Systems />} />
+              <Route path="/devices" element={<Devices />} />
               <Route path="/periyods" element={<Periyods />} />
               <Route path="/technicians" element={<Technicians />} />
               <Route path="/officers" element={<Officers />} />

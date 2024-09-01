@@ -5,7 +5,7 @@ import moment from "moment";
 const initialForm = {
   name:'',
   birlik:{name:'', id:''},
-  sistem:{name:'', id:'', shortName:''},
+  device:{name:'', id:'', shortName:''},
   periyod:{name:'', id:''},
   kontrolNo:'',
   baslangicTarihi: moment().format('DD.MM.YYYY'),
@@ -25,7 +25,7 @@ interface propsType{
 function Form(props:propsType) {
   const [form, setForm] = useState<any>(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
-  const [sistemler, setSistemler] = useState<null | []>(null);
+  const [devices, setDevices] = useState<null | []>(null);
   const [periyotlar, setPeriyotlar] = useState<null | []>(null);
   const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
   const [yoneticiler, setYoneticiler] = useState<null | []>(null);
@@ -42,18 +42,18 @@ function Form(props:propsType) {
   const getData = () => {
     Promise.all([
       com.sql({ type: 'selectAll', tableName: 'sides' }),
-      com.sql({ type: 'selectAll', tableName: 'systems' }),
+      com.sql({ type: 'selectAll', tableName: 'devices' }),
       com.sql({ type: 'selectAll', tableName: 'periyods' }),
       com.sql({ type: 'selectAll', tableName: 'technicians' }),
       com.sql({ type: 'selectAll', tableName: 'officers' }),
       com.sql({ type: 'selectAll', tableName: 'stocks' }),
-    ]).then(([sidesRes, systemsRes, periyodsRes, techniciansRes, officersRes, stocksRes]) => {
+    ]).then(([sidesRes, devicesRes, periyodsRes, techniciansRes, officersRes, stocksRes]) => {
       let temp;
       if(props.select){
         temp = {
           ...props.select,
           birlik: sidesRes.find(i=> i.id == props.select.birlik ) || { id: '' },
-          sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
+          device: devicesRes.find(i=> i.id == props.select.device ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
           periyod: periyodsRes.find(i=> i.id == props.select.periyod ) || { id: '' },
@@ -93,7 +93,7 @@ function Form(props:propsType) {
       }
 
       setBirlikler(sidesRes);
-      setSistemler(systemsRes);
+      setDevices(devicesRes);
       setPeriyotlar(periyodsRes);
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
@@ -110,7 +110,7 @@ function Form(props:propsType) {
   const generateClick = () => {
     generatePdfBakim({
       birlikAdi:form.birlik.name,
-      sistemAdi:form.sistem.name,
+      sistemAdi:form.device.name,
       kontrolNo:form.kontrolNo,
 
       baslangicTarihi:form.baslangicTarihi,
@@ -137,7 +137,7 @@ function Form(props:propsType) {
         data:{
           kontrolNo:form.kontrolNo,
           birlik:form.birlik.id,
-          sistem:form.sistem.id,
+          device:form.device.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           periyod:form.periyod.id,
@@ -215,7 +215,7 @@ function Form(props:propsType) {
         data:{
           kontrolNo:form.kontrolNo,
           birlik:form.birlik.id,
-          sistem:form.sistem.id,
+          device:form.device.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           periyod:form.periyod.id,
@@ -326,8 +326,8 @@ function Form(props:propsType) {
             <Select placeHolder="Birlik Seçiniz!" values={birlikler} value={form.birlik} onChange={(e)=> formChange(e,'birlik')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
-            <label className="form-label">Sistem Adı</label>
-            <Select placeHolder="Sistem Seçiniz!" values={sistemler} value={form.sistem} onChange={(e)=> formChange(e,'sistem')}/>
+            <label className="form-label">Cihaz Adı</label>
+            <Select placeHolder="Sistem Seçiniz!" values={devices} value={form.device} onChange={(e)=> formChange(e,'device')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kontrol No</label>

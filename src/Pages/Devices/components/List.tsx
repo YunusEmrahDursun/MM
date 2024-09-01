@@ -1,58 +1,45 @@
 import React, { useEffect, useState } from 'react'
 import { com, Table, Modal } from 'support';
-import moment from "moment";
 interface propsType{
   selectItem:Function
 }
 
 const List = (props:propsType) => {
     const [data, setData] = useState([]);
-    const [sistemler, setSistemler] = useState<null | []>(null);
     const [showModal, setShowModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<any>(null);
     useEffect(() => {
-      com.sql({ type: 'selectAll', tableName: 'systems' }).then(res=>{
-        setSistemler(res);
-      })
-    }, [])
-
-    useEffect(() => {
-
-      if(props.selectItem && sistemler){
+      if(props.selectItem){
 
         getData();
 
       }
 
-    }, [props.selectItem, sistemler])
+    }, [props.selectItem])
 
     const getData = () => {
       com.sql({
         type:'selectAll',
-        tableName:'maintenances'
-      }).then(res=> setData(res.map(i=>{
-        const f:any = sistemler && sistemler.find((s:any)=> s.id == i.sistem );
-        return {
-          ...i,
-          tarih:moment(i.baslangicTarihi).format("DD.MM.YYYY HH:mm"),
-          showSistem: (f && f.name) || '',
-          button: <div className='float-end'>
-            <button type="button" className="btn btn-square btn-outline-primary m-2" onClick={()=> props.selectItem({...i, id: null })}><i className="fa fa-copy"></i></button>
-            <button type="button" className="btn btn-square btn-outline-primary m-2" onClick={()=> props.selectItem(i)}><i className="fa fa-edit"></i></button>
-            <button type="button" className="btn btn-square btn-outline-danger m-2" onClick={()=> handleDeleteClick(i)}><i className="fa fa-trash"></i></button>
-          </div>
-        }
-      })));
+        tableName:'devices'
+      }).then(res=> setData(res.map(i=>({
+        ...i,
+        button: <div className='float-end'>
+          <button type="button" className="btn btn-square btn-outline-primary m-2" onClick={()=> props.selectItem(i)}><i className="fa fa-edit"></i></button>
+          <button type="button" className="btn btn-square btn-outline-danger m-2" onClick={()=> handleDeleteClick(i)}><i className="fa fa-trash"></i></button>
+        </div>
+      }))));
     }
+
     const handleDeleteClick = (item) => {
       setItemToDelete(item);
       setShowModal(true);
     };
-    const handleConfirmDelete = () => {
+
+    const handleConfirmDelete  = () => {
       if (itemToDelete){
         com.sql({
           type:'setDeleted',
-          tableName:'maintenances',
+          tableName:'devices',
           where:{id:itemToDelete.id}
         }).then(res=>{
           setShowModal(false);
@@ -60,6 +47,7 @@ const List = (props:propsType) => {
           getData();
         })
       }
+
     }
     const handleCloseModal = () => {
       setShowModal(false);
@@ -72,9 +60,7 @@ const List = (props:propsType) => {
                 header={
                     [
                         { label:'#',key:'id',type:'number'},
-                        { label:'Kontrol',key:'kontrolNo',type:'string'},
-                        { label:'Sistem',key:'showSistem',type:'string'},
-                        { label:'Tarih',key:'tarih',type:'date'},
+                        { label:'Ad',key:'name',type:'string'},
                         { label:'',key:'button'},
                     ]
                 }
