@@ -21,6 +21,7 @@ import Periyods from '../Pages/Periyods';
 import Technicians from '../Pages/Technicians';
 import Officers from '../Pages/Officers';
 import Stocks from '../Pages/Stocks';
+import Calender from '../Pages/Calender';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const Workspace = () => {
@@ -45,6 +46,7 @@ const Workspace = () => {
               <Route path="/technicians" element={<Technicians />} />
               <Route path="/officers" element={<Officers />} />
               <Route path="/stocks" element={<Stocks />} />
+              <Route path="/calender" element={<Calender />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

@@ -91,6 +91,13 @@ const create = () => {
 
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS calender (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        year TEXT,
+        name TEXT,
+        
+      )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS pass (
       password TEXT,
       deleted INTEGER DEFAULT 0

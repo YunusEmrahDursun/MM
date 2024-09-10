@@ -2,15 +2,52 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { com } from "support";
 import LineChart from './components/LineChart';
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
+import './style.css';
+moment.locale("tr");
+const localizer = momentLocalizer(moment);
 interface dataType{
   maintenances:number,
   faults:number,
   maintenancesAylik:any[],
   faultsAylik:any[],
 }
+
+const initialEvents = [
+  {
+    id: 1,
+    title: "Daha önce eklenen not",
+    start: new Date(),
+    end: new Date(),
+  },
+  {
+    id: 2,
+    title: "Daha önce eklenen not",
+    start: new Date(),
+    end: new Date(),
+  },
+  {
+    id: 3,
+    title: "Daha önce eklenen not",
+    start: new Date(),
+    end: new Date(),
+  },
+  {
+    id: 4,
+    title: "Daha önce eklenen not",
+    start: new Date(),
+    end: new Date(),
+  }
+];
+
 function Home() {
   const navigate = useNavigate();
+  const [events, setEvents] = useState(initialEvents);
+  const [selectedDateEvents, setSelectedDateEvents] = useState<any[]>([]);
+  const [modalTitle, setModalTitle] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState<dataType>({
     maintenances:0,
     faults:0,
@@ -64,6 +101,27 @@ function Home() {
 
   }
 
+  const handleDateClick = (date) => {
+    const formattedDate = moment(date).format("DD-MM-YYYY");
+    const dateEvents = events.filter(event =>
+      moment(event.start).format("DD-MM-YYYY") === formattedDate
+    );
+    setSelectedDateEvents(dateEvents);
+    setModalTitle(formattedDate);
+    setShowModal(true);
+  };
+
+  const handleEventClick = (e) => {
+    console.log(e)
+  };
+
+  const onClose = () => {
+    setShowModal(false);
+    setSelectedDateEvents([]);
+    setModalTitle('');
+  };
+
+
   return (
     <div className="row g-4">
       <div role="button" className="col-sm-6 col-xl-3" onClick={()=>navigate('/maintenance?to=add')}>
@@ -103,10 +161,65 @@ function Home() {
           </div>
       </div>
       <div className="col-12" >
+        <div className="bg-light rounded p-4" style={{ height: "600px" }}>
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            selectable
+            onSelectSlot={({ start }) => handleDateClick(start)}
+            onSelectEvent={handleEventClick}
+            onDrillDown={(start) => handleDateClick(start)}
+            views={['month']} 
+            toolbar={true}    
+            style={{ height: 500 }}
+            messages={{
+              next: "Sonraki",
+              previous: "Önceki",
+              today: "Bugün",
+              month: "Ay",
+              week: "Hafta",
+              day: "Gün",
+              agenda: "Ajanda",
+              date: "Tarih",
+              time: "Zaman",
+              event: "Olay",
+              showMore: (total) => `+${total} daha fazla`, 
+            }}
+            
+          />
+        </div>
+      </div>
+      <div className="col-12" >
         <div className="bg-light rounded p-4">
           <LineChart maintenancesAylik={data.maintenancesAylik} faultsAylik={data.faultsAylik}/>
         </div>
       </div>
+      {showModal && <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5>{modalTitle}</h5>
+            <button className="modal-close" onClick={onClose}>×</button>
+          </div>
+          <div className="modal-body">
+            {selectedDateEvents.length > 0 ? (
+              <ul className="event-list">
+                {selectedDateEvents.map(event => (
+                  <li key={event.id} className="event-item" onClick={() => handleEventClick(event)}>
+                    {event.title}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-events">Bu tarihte hiçbir bakım bulunmuyor.</p>
+            )}
+          </div>
+          <div className="modal-footer">
+            <button className="modal-btn" onClick={onClose}>Kapat</button>
+          </div>
+        </div>
+      </div>}
     </div>
   )
 }

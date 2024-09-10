@@ -16,6 +16,7 @@ const initialForm = {
   ariza:'',
   personel:{name:'', id:'', title:''},
   yonetici:{name:'', id:'', title:''},
+  kalite:{name:'', id:'', title:''},
   arizaNo:'',
   malzemeler:[]
 };
@@ -54,6 +55,7 @@ function Form(props:propsType) {
           birlik: sidesRes.find(i=> i.id == props.select.birlik ) || { id: '' },
           sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
+          kalite: techniciansRes.find(i=> i.id == props.select.kalite ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
           baslangicTarihi:moment(props.select.baslangicTarihi).format("DD.MM.YYYY"),
           baslangicSaati:moment(props.select.baslangicTarihi).format("HH:mm"),
@@ -121,8 +123,10 @@ function Form(props:propsType) {
       dokuman:form.dokuman,
       personel:form.personel.name,
       yonetici:form.yonetici.name,
+      kalite:form.kalite.name,
       personelKase:form.personel.title,
       yoneticiKase:form.yonetici.title,
+      kaliteKase:form.kalite.title,
 
       malzemeler:malzemeList
     })
@@ -139,6 +143,7 @@ function Form(props:propsType) {
           sistem:form.sistem.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
+          kalite:form.kalite.id,
           ariza:form.ariza,
           aciklama:form.aciklama,
           dokuman:form.dokuman,
@@ -212,6 +217,7 @@ function Form(props:propsType) {
           sistem:form.sistem.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
+          kalite:form.kalite.id,
           ariza:form.ariza,
           aciklama:form.aciklama,
           dokuman:form.dokuman,
@@ -367,11 +373,15 @@ function Form(props:propsType) {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Personel</label>
             <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personel} onChange={(e)=> formChange(e,'personel')}/>
         </div>
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
+            <label className="form-label">Kalite Personeli</label>
+            <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.kalite} onChange={(e)=> formChange(e,'kalite')}/>
+        </div>
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Yönetici</label>
             <Select placeHolder="Yönetici Seçiniz!" values={yoneticiler} value={form.yonetici} onChange={(e)=> formChange(e,'yonetici')}/>
         </div>

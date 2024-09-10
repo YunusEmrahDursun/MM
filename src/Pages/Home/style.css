@@ -57,3 +57,29 @@
 .modal-btn-confirm {
   background: #dc3545;
 }
+
+.event-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.event-item {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.event-item:hover {
+  background-color: #e2e6ea;
+  transform: scale(1.02);
+}
+
+.no-events {
+  font-style: italic;
+  color: #6c757d;
+}

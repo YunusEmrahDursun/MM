@@ -25,7 +25,9 @@ function generatePdfBakim(obj:{
   personel,
   yonetici,
   personelKase,
-  yoneticiKase
+  yoneticiKase,
+  kalite,
+  kaliteKase
 }){
   var doc = new jsPDF('l');
   var PTSans = getFont();
@@ -42,39 +44,44 @@ function generatePdfBakim(obj:{
   doc.setFontSize(10);
   doc.setFontType("normal");
 
-  doc.text(obj.birlikAdi, 34, 35);
-  doc.text(obj.sistemAdi, 122, 35);
-  doc.text(obj.kontrolNo, 232, 35);
+  doc.text(obj.birlikAdi || '', 34, 35);
+  doc.text(obj.sistemAdi || '', 122, 35);
+  doc.text(obj.kontrolNo || '', 232, 35);
 
   doc.text(obj.baslangicTarihi +( obj.baslangicSaati ? " / "+ obj.baslangicSaati : "" ), 60, 55);
   doc.text(obj.bitisTarihi +( obj.bitisSaati ? " / "+ obj.bitisSaati : "" ), 160, 55);
-  doc.text(obj.periyod, 250, 55);
+  doc.text(obj.periyod || '', 250, 55);
 
   obj.malzemeler.forEach((malzeme,index) => {
     doc.text(index+1+"", 10, 77 + ( index * 6));
-    doc.text(malzeme.name, 21, 77 + ( index * 6));
-    doc.text(malzeme.stokNo, 66, 77 + ( index * 6));
-    doc.text(malzeme.parcaNo, 96, 77 + ( index * 6));
-    doc.text(malzeme.girilenMiktar, 139, 77 + ( index * 6));
-    doc.text(malzeme.sarfYeri, 169, 77 + ( index * 6));
-    doc.text(malzeme.tedarikYeri, 229, 77 + ( index * 6));
+    doc.text(malzeme.name || '', 21, 77 + ( index * 6));
+    doc.text(malzeme.stokNo || '', 66, 77 + ( index * 6));
+    doc.text(malzeme.parcaNo || '', 96, 77 + ( index * 6));
+    doc.text(malzeme.girilenMiktar || '', 139, 77 + ( index * 6));
+    doc.text(malzeme.sarfYeri || '', 169, 77 + ( index * 6));
+    doc.text(malzeme.tedarikYeri || '', 229, 77 + ( index * 6));
     doc.text(malzeme.fiyati+"", 259, 77 + ( index * 6));
   });
 
-  doc.text(obj.dokuman , 10, 105);
-  doc.text(obj.aciklama, 10, 139);
+  doc.text(obj.dokuman || '', 10, 105);
+  doc.text(obj.aciklama || '', 10, 139);
 
   doc.setFontSize(12);
-  doc.text(obj.personel ,38,170)
+  doc.text(obj.personel || '',38,170)
   doc.setFontSize(8);
-  doc.text(obj.personelKase ,38,175)
+  doc.text(obj.personelKase || '',38,175)
 
   doc.setFontSize(12);
-  doc.text(obj.yonetici, 220, 170);
+  doc.text(obj.kalite || '',120,170)
   doc.setFontSize(8);
-  doc.text(obj.yoneticiKase, 220, 175);
+  doc.text(obj.kaliteKase || '',120,175)
 
-  doc.save(obj.kontrolNo);
+  doc.setFontSize(12);
+  doc.text(obj.yonetici || '', 220, 170);
+  doc.setFontSize(8);
+  doc.text(obj.yoneticiKase || '', 220, 175);
+
+  doc.save(obj.kontrolNo || '');
 }
 function generatePdfAriza(obj:{
   birlikAdi,
@@ -92,7 +99,9 @@ function generatePdfAriza(obj:{
   personel,
   yonetici,
   personelKase,
-  yoneticiKase
+  yoneticiKase,
+  kalite,
+  kaliteKase,
 }){
   var doc = new jsPDF('l');
   var PTSans = getFont();
@@ -109,40 +118,45 @@ function generatePdfAriza(obj:{
   doc.setFontSize(10);
   doc.setFontType("normal");
 
-  doc.text(obj.birlikAdi, 37, 34);
-  doc.text(obj.sistemAdi, 122, 34);
-  doc.text(obj.kontrolNo, 232, 34);
+  doc.text(obj.birlikAdi || '', 37, 34);
+  doc.text(obj.sistemAdi || '', 122, 34);
+  doc.text(obj.kontrolNo || '', 232, 34);
 
-  doc.text(obj.arizaNo, 37, 50);
+  doc.text(obj.arizaNo || '', 37, 50);
   doc.text(obj.baslangicTarihi + ( obj.baslangicSaati ? " / "+ obj.baslangicSaati : "" ), 134, 50);
   doc.text(obj.bitisTarihi + ( obj.bitisSaati ? " / "+ obj.bitisSaati : "" ), 232, 50);
 
-  doc.text(obj.ariza, 10, 66);
-  doc.text(obj.dokuman, 10, 127);
-  doc.text(obj.aciklama, 10, 153);
+  doc.text(obj.ariza || '', 10, 66);
+  doc.text(obj.dokuman || '', 10, 127);
+  doc.text(obj.aciklama || '', 10, 153);
 
   obj.malzemeler.forEach((malzeme,index) => {
     doc.text(index+1+"", 10, 98 + ( index * 6));
-    doc.text(malzeme.name, 21, 98 + ( index * 6));
-    doc.text(malzeme.stokNo, 90, 98 + ( index * 6));
-    doc.text(malzeme.parcaNo, 120, 98 + ( index * 6));
-    doc.text(malzeme.girilenMiktar, 160, 98 + ( index * 6));
-    doc.text(malzeme.sarfYeri, 191, 98 + ( index * 6));
-    doc.text(malzeme.tedarikYeri, 216, 98 + ( index * 6));
+    doc.text(malzeme.name || '', 21, 98 + ( index * 6));
+    doc.text(malzeme.stokNo || '', 90, 98 + ( index * 6));
+    doc.text(malzeme.parcaNo || '', 120, 98 + ( index * 6));
+    doc.text(malzeme.girilenMiktar || '', 160, 98 + ( index * 6));
+    doc.text(malzeme.sarfYeri || '', 191, 98 + ( index * 6));
+    doc.text(malzeme.tedarikYeri || '', 216, 98 + ( index * 6));
     doc.text(malzeme.fiyati+"", 251, 98 + ( index * 6));
   });
 
   doc.setFontSize(12);
-  doc.text(obj.personel ,38,184)
+  doc.text(obj.personel || '',38,184)
   doc.setFontSize(8);
-  doc.text(obj.personelKase ,38,189)
+  doc.text(obj.personelKase || '',38,189)
 
   doc.setFontSize(12);
-  doc.text(obj.yonetici, 220, 184);
+  doc.text(obj.kalite || '',120,184)
   doc.setFontSize(8);
-  doc.text(obj.yoneticiKase, 220, 189);
+  doc.text(obj.kaliteKase || '',120,189)
+  
+  doc.setFontSize(12);
+  doc.text(obj.yonetici || '', 220, 184);
+  doc.setFontSize(8);
+  doc.text(obj.yoneticiKase || '', 220, 189);
 
-  doc.save(obj.kontrolNo);
+  doc.save(obj.kontrolNo || '');
 }
 export {
   generatePdfBakim,

@@ -23,7 +23,7 @@ export default () => {
             { text: 'Periyodlar', link: '/periyods' },
             { text: 'Teknisyenler', link: '/technicians' },
             { text: 'Görevli Personel', link: '/officers' },
-
+            { text: 'Bakım Takvimi', link: '/calender' },
           ]
         }
       ])
