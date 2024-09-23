@@ -9,8 +9,8 @@ export type Action =
 | { type: 'TOGGLE_SIDEBAR'; value: boolean } | { type: 'ADMIN'; value: boolean } ;
 
 const initialState: StateType = {
-	sidebar: false,
-  admin:false
+  sidebar: false,
+  admin:true
 };
 
 const reducer = (state: StateType, action: Action): StateType => {

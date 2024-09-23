@@ -1,4 +1,4 @@
-import {  useEffect, useState } from "react";
+import {  useEffect, useRef, useState } from "react";
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../../assets/img/logo.png';
 import { useGlobalState } from "./../../support/index";
@@ -8,7 +8,21 @@ export default () => {
   const location = useLocation();
   const { state, dispatch } = useGlobalState();
   const [menu, setMenu] = useState<any>([]);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const isActive = (path) => location.pathname === path;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        sideBarClick();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if(state.admin){
@@ -35,8 +49,12 @@ export default () => {
     }
   }, [state.admin])
 
+  const sideBarClick = () => {
+    dispatch({ type: 'TOGGLE_SIDEBAR', value: false });
+  }
+
   return (
-    <div className={"sidebar pe-4 pb-3 "+ (state.sidebar ? 'open' : '')}>
+    <div className={"sidebar pe-4 pb-3 "+ (state.sidebar ? 'open' : '')} ref={sidebarRef}>
         <nav className="navbar bg-light navbar-light position-relative">
             <Link to={'/'} className="navbar-brand mx-4 w-100">
               <h3 className="text-primary text-center">
@@ -63,7 +81,6 @@ export default () => {
 const DrawItem = ({item}) => {
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useGlobalState();
-
 
   const toogleClick = () => {
     setOpen(!open);

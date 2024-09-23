@@ -95,7 +95,8 @@ const create = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         year TEXT,
         name TEXT,
-        
+        content TEXT,
+        deleted INTEGER DEFAULT 0
       )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS pass (
