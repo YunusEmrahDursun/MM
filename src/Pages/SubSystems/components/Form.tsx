@@ -33,7 +33,6 @@ const Form = (props:propsType) => {
   
   const saveClick = () => {
     if(form.id){
-      debugger
       com.sql({
         type:'update',
         data:{
