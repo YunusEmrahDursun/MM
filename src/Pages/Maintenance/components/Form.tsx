@@ -26,6 +26,7 @@ interface propsType{
   select:any
 }
 function Form(props:propsType) {
+  
   const [form, setForm] = useState<any>(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
   const [devices, setDevices] = useState<null | []>(null);
@@ -40,7 +41,6 @@ function Form(props:propsType) {
   const [tempMalzemeList, setTempMalzemeList] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const location = useLocation();
-  
   useEffect(() => {
     getData();
   }, []);
@@ -108,6 +108,7 @@ function Form(props:propsType) {
 
         temp.device = devicesRes.find(i=> i.id == item.sistemId ) || { id: '' };
         temp.subDevice = subDevicesRes.find(i=> i.id == item.altSistemId ) || { id: '' };
+        temp.dokuman = subDevicesRes.find(i=> i.id == item.altSistemId )?.dokuman || '';
 
       }else{
         temp = {...initialForm};

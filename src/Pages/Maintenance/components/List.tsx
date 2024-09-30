@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { com, Table, Modal, generatePdfBakim } from 'support';
 import moment from "moment";
+import { useLocation, useNavigate } from 'react-router-dom';
 interface propsType{
   selectItem:Function
 }
@@ -10,10 +11,18 @@ const List = (props:propsType) => {
     const [sistemler, setSistemler] = useState<null | []>(null);
     const [showModal, setShowModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<any>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
     useEffect(() => {
       com.sql({ type: 'selectAll', tableName: 'systems' }).then(res=>{
         setSistemler(res);
       })
+
+      if(location.state){
+        navigate('/maintenance', {  })
+      }
+
+    
     }, [])
 
     useEffect(() => {

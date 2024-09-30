@@ -6,7 +6,7 @@ interface propsType{
   afterSaved:Function
   select:any
 }
-const initialForm = {name:'', system:{name:'',id:''}};
+const initialForm = {name:'', system:{name:'',id:''}, dokuman:''};
 
 const Form = (props:propsType) => {
   const [form, setForm] = useState<any>(initialForm);
@@ -37,7 +37,8 @@ const Form = (props:propsType) => {
         type:'update',
         data:{
           name:form.name,
-          systemId:form.system.id
+          dokuman:form.dokuman,
+          systemId:form.system.id,
         },
         where:{id:form.id},
         tableName:'subSystems'
@@ -50,6 +51,7 @@ const Form = (props:propsType) => {
         type:'insert',
         data:{
           name:form.name,
+          dokuman:form.dokuman,
           systemId:form.system.id
         },
         tableName:'subSystems'
@@ -74,6 +76,10 @@ const Form = (props:propsType) => {
       <div className="mb-3">
         <label className="form-label">Sistem</label>
         <Select placeHolder="Sistem Seçiniz!" values={systems} value={form.system} onChange={(e)=> formChange(e,'system')}/>
+      </div>
+      <div className="mb-3">
+          <label className="form-label">Döküman</label>
+          <input className="form-control"  value={form.dokuman} onChange={(e)=> formChange(e,'dokuman')}/>
       </div>
       <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
     </Layout>

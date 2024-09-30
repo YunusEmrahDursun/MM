@@ -16,6 +16,7 @@ const create = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         systemId INTEGER,
+        dokuman TEXT,
         deleted INTEGER DEFAULT 0
     )`);
 
@@ -29,6 +30,7 @@ const create = () => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         deviceId INTEGER,
+        dokuman TEXT,
         deleted INTEGER DEFAULT 0
     )`);
     
