@@ -125,7 +125,6 @@ function Form(props:propsType) {
         }
         setShowSubDevices(subDevicesRes)
       }
-
       setBirlikler(sidesRes);
       setDevices(devicesRes);
       setSubDevices(subDevicesRes);
@@ -285,9 +284,17 @@ function Form(props:propsType) {
   }
   const formChange = (e, key) => {
     const temp = {...form};
-    if(key == 'device'){
+    if(key == 'subDevice'){
+      temp.dokuman = e.target.value.dokuman;
+      temp[key] = e.target.value;
+    }
+    else if(key == 'device'){
       if(e.target.value.id){
-        setShowSubDevices(subDevices.filter(i=> i.id == e.target.value.id))
+        const tempArr = subDevices.filter(i=> i.deviceId == e.target.value.id);
+        setShowSubDevices(tempArr)
+        if(!tempArr.some(i=> i.id == temp.subDevice.id)){
+          temp.subDevice =  {id:''}
+        }
       }
       else{
         temp.subDevice = {id:''}

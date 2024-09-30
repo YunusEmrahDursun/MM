@@ -86,6 +86,7 @@ const create = () => {
       periyod INTEGER,
       personel INTEGER,
       yonetici INTEGER,
+      kalite INTEGER,
       malzemeler TEXT,
       deleted INTEGER DEFAULT 0
 
@@ -105,6 +106,7 @@ const create = () => {
       ariza TEXT,
       personel INTEGER,
       yonetici INTEGER,
+      kalite INTEGER,
       malzemeler TEXT,
       deleted INTEGER DEFAULT 0
 

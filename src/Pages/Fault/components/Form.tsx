@@ -255,9 +255,13 @@ function Form(props:propsType) {
   const formChange = (e, key) => {
     const temp = {...form};
 
-    if(key == 'sistem'){
+    if(key == 'subSistem'){
+      temp.dokuman = e.target.value.dokuman;
+      temp[key] = e.target.value;
+    }
+    else if(key == 'sistem'){
       if(e.target.value.id){
-        setShowSubSistemler(subSistemler.filter(i=> i.id == e.target.value.id))
+        setShowSubSistemler(subSistemler.filter(i=> i.systemId == e.target.value.id))
       }
       else{
         temp.subSistem = {id:''}
