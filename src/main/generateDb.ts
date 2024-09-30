@@ -17,6 +17,9 @@ const create = () => {
         name TEXT,
         systemId INTEGER,
         dokuman TEXT,
+        stock1 INTEGER,
+        stock2 INTEGER,
+        stock3 INTEGER,
         deleted INTEGER DEFAULT 0
     )`);
 
@@ -31,6 +34,9 @@ const create = () => {
         name TEXT,
         deviceId INTEGER,
         dokuman TEXT,
+        stock1 INTEGER,
+        stock2 INTEGER,
+        stock3 INTEGER,
         deleted INTEGER DEFAULT 0
     )`);
     

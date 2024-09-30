@@ -286,6 +286,14 @@ function Form(props:propsType) {
     const temp = {...form};
     if(key == 'subDevice'){
       temp.dokuman = e.target.value.dokuman;
+      const malzemeArr = [];
+      ([e.target.value.stock1, e.target.value.stock2, e.target.value.stock3]).filter(i=> i!='').forEach(i=> {
+        const found = malzemeler?.find((malzeme:any)=> malzeme.id == i);
+        if(found){
+          malzemeArr.push(found);
+        }
+      })
+      setMalzemeList(malzemeArr)
       temp[key] = e.target.value;
     }
     else if(key == 'device'){
