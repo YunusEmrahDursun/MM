@@ -34,15 +34,18 @@ const List = (props:propsType) => {
         com.sql({ type: 'selectAll', tableName: 'technicians' }),
         com.sql({ type: 'selectAll', tableName: 'officers' }),
         com.sql({ type: 'selectAll', tableName: 'stocks' }),
-      ]).then(([sidesRes, devicesRes, periyodsRes, techniciansRes, officersRes, stocksRes]) => {
+        com.sql({ type: 'selectAll', tableName: 'subDevices' }),
+      ]).then(([sidesRes, devicesRes, periyodsRes, techniciansRes, officersRes, stocksRes, subDevicesRes]) => {
         let temp;
         if(item){
           temp = {
             ...item,
             birlik: sidesRes.find(i=> i.id == item.birlik ) || { id: '' },
             device: devicesRes.find(i=> i.id == item.device ) || { id: '' },
+            subDevice: subDevicesRes.find(i=> i.id == item.subDevice ) || { id: '' },
             personel: techniciansRes.find(i=> i.id == item.personel ) || { id: '' },
             yonetici: officersRes.find(i=> i.id == item.yonetici ) || { id: '' },
+            kalite: techniciansRes.find(i=> i.id == item.kalite ) || { id: '' },
             periyod: periyodsRes.find(i=> i.id == item.periyod ) || { id: '' },
             baslangicTarihi:moment(item.baslangicTarihi).format("DD.MM.YYYY"),
             baslangicSaati:moment(item.baslangicTarihi).format("HH:mm"),
@@ -62,6 +65,7 @@ const List = (props:propsType) => {
             generatePdfBakim({
               birlikAdi:temp.birlik.name,
               sistemAdi:temp.device.name,
+              subSistemAdi:temp.subDevice.name,
               kontrolNo:temp.kontrolNo,
         
               baslangicTarihi:temp.baslangicTarihi,
@@ -74,9 +78,11 @@ const List = (props:propsType) => {
               periyod:temp.periyod.name,
               personel:temp.personel.name,
               yonetici:temp.yonetici.name,
+              kalite:temp.kalite.name,
               personelKase:temp.personel.title,
               yoneticiKase:temp.yonetici.title,
-        
+              kaliteKase:temp.kalite.title,
+
               malzemeler:tempMalzeme
             })
           } catch (error) {

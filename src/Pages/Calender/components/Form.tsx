@@ -7,16 +7,29 @@ interface propsType{
   select:any
 }
 const initialForm = {name:'', year:'', content:'',data: ''};
-
+let devices:any[] = [];
+let subDevices:any[] = []
 const Form = (props:propsType) => {
   const [form, setForm] = useState<any>(initialForm);
   const [data, setData] = useState<any>(null);
-  useEffect(() => {
-    if(props.select){
-      contentChange(props.select, props.select.content);
-    }
-  }, [props.select])
+  const [notFound, setNotFound] = useState<any>([]);
 
+  useEffect(() => {
+    Promise.all([
+      com.sql({ type: 'selectAll', tableName: 'devices' }),
+      com.sql({ type: 'selectAll', tableName: 'subDevices' }),
+    ]).then(([devicesRes,subDevicesRes]) => {
+      
+      devices = devicesRes;
+      subDevices = subDevicesRes;
+      if(props.select){
+        contentChange(props.select, props.select.content);
+      }
+    }).catch(error => {
+
+    });
+  }, [])
+  
   const saveClick = () => {
     if(form.id){
       com.sql({
@@ -71,6 +84,7 @@ const Form = (props:propsType) => {
     }
     const tempData:any[] = [];
     const tempDataJson:any[] = [];
+    const tempNotFound:any[] = [];
     result.forEach((i:string)=> {
       let sistem = '', altSistem = '';
 
@@ -84,9 +98,26 @@ const Form = (props:propsType) => {
       let splitArr = str.split(/(\d{0,1}\s{0,1}[A-Z]+)/gm).filter(Boolean);
       for (let index = 0; index < splitArr.length; index+=2) {
         let dayArr = splitArr[index+1].replace('\\t','').replace('\\n\\t','').split('\\t');
+        const foundSystem =  devices.find(i=> i.name == sistem ) || { id: '', name: sistem };
+        const foundSubSystem =  subDevices.find(i=> i.name == altSistem ) || { id: '', name: altSistem };
+        if(foundSystem.id == '' && !tempNotFound.some(i=> i.name == sistem && i.type == 'Cihaz')){
+          tempNotFound.push({
+            type:'Cihaz',
+            name:sistem
+          })
+        }
+        if(foundSubSystem.id == '' && !tempNotFound.some(i=> i.name == altSistem && i.type == 'Alt Cihaz')){
+          tempNotFound.push({
+            type:'Alt Cihaz',
+            name:altSistem,
+            sistem:sistem
+          })
+        }
         tempDataJson.push({
-          sistem,
-          altSistem,
+          sistem: foundSystem.name,
+          sistemId: foundSystem.id,
+          altSistem: foundSubSystem.name,
+          altSistemId: foundSubSystem.id,
           period:splitArr[index],
           aylar:dayArr
         })
@@ -95,9 +126,15 @@ const Form = (props:propsType) => {
       }
       
     })
-    tempForm.data = JSON.stringify(tempDataJson);
-    setForm(tempForm);
-    setData(tempData);
+    
+    if(tempNotFound.length){
+      setNotFound(tempNotFound);
+    }else{
+      tempForm.data = JSON.stringify(tempDataJson);
+      setForm(tempForm);
+      setData(tempData);
+      setNotFound([]);
+    }
   }
   return ( <>
       <Layout>
@@ -120,6 +157,11 @@ const Form = (props:propsType) => {
         <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>
       </Layout>
 
+      {
+        notFound.length ? notFound.map((i,index)=> <div key={index} className='btn-danger' style={{padding:5,marginBottom:5}}>
+          {i.name} {i.type} Bulunamadı. {i.sistem && `( Üst Cihaz : ${i.sistem})`} <br/> 
+        </div> ) : <></>
+      }
       { data && <Layout>
         <table className="table">
             <thead>

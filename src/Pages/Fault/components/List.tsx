@@ -34,14 +34,17 @@ const List = (props:propsType) => {
         com.sql({ type: 'selectAll', tableName: 'technicians' }),
         com.sql({ type: 'selectAll', tableName: 'officers' }),
         com.sql({ type: 'selectAll', tableName: 'stocks' }),
-      ]).then(([sidesRes, systemsRes,  techniciansRes, officersRes, stocksRes]) => {
+        com.sql({ type: 'selectAll', tableName: 'subSystems' }),
+      ]).then(([sidesRes, systemsRes,  techniciansRes, officersRes, stocksRes, subSystemsRes]) => {
         let temp;
         if(item){
           temp = {
             ...item,
             birlik: sidesRes.find(i=> i.id == item.birlik ) || { id: '' },
             sistem: systemsRes.find(i=> i.id == item.sistem ) || { id: '' },
+            subSistem: subSystemsRes.find(i=> i.id == item.subSistem ) || { id: '' },
             personel: techniciansRes.find(i=> i.id == item.personel ) || { id: '' },
+            kalite: techniciansRes.find(i=> i.id == item.kalite ) || { id: '' },
             yonetici: officersRes.find(i=> i.id == item.yonetici ) || { id: '' },
             baslangicTarihi:moment(item.baslangicTarihi).format("DD.MM.YYYY"),
             baslangicSaati:moment(item.baslangicTarihi).format("HH:mm"),
@@ -61,6 +64,7 @@ const List = (props:propsType) => {
             generatePdfAriza({
               birlikAdi:temp.birlik.name,
               sistemAdi:temp.sistem.name,
+              subSistemAdi:temp.subDevice.name,
               kontrolNo:temp.kontrolNo,
               arizaNo:temp.arizaNo,
         
@@ -74,9 +78,11 @@ const List = (props:propsType) => {
               dokuman:temp.dokuman,
               personel:temp.personel.name,
               yonetici:temp.yonetici.name,
+              kalite:temp.kalite.name,
               personelKase:temp.personel.title,
               yoneticiKase:temp.yonetici.title,
-        
+              kaliteKase:temp.kalite.title,
+
               malzemeler:tempMalzeme
             })
           } catch (error) {

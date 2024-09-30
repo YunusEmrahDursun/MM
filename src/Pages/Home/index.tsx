@@ -85,6 +85,8 @@ function Home() {
                 sistem:item.sistem,
                 altSistem:item.altSistem,
                 period:item.period,
+                sistemId:item.sistemId,
+                altSistemId:item.altSistemId
               })
             }
             else if(ay.trim() != '-'){
@@ -97,6 +99,8 @@ function Home() {
                   sistem:item.sistem,
                   altSistem:item.altSistem,
                   period:item.period,
+                  sistemId:item.sistemId,
+                  altSistemId:item.altSistemId
                 })
               });
               

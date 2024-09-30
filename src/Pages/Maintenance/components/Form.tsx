@@ -104,7 +104,11 @@ function Form(props:propsType) {
         }
         temp.baslangicTarihi = moment(item.start).format('DD.MM.YYYY');
         temp.bitisTarihi = moment(item.end).format('DD.MM.YYYY');
-        temp.periyod = periyodsRes.find(i=> i.name == item.period ) || { id: '' }
+        temp.periyod = periyodsRes.find(i=> i.name == item.period ) || { id: '' };
+
+        temp.device = devicesRes.find(i=> i.id == item.sistemId ) || { id: '' };
+        temp.subDevice = subDevicesRes.find(i=> i.id == item.altSistemId ) || { id: '' };
+
       }else{
         temp = {...initialForm};
 
