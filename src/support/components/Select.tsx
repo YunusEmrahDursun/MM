@@ -23,7 +23,7 @@ const Select = (props: propsType) => {
   };
 
   const clearSelection = () => {
-    const obj = { target: { value: '' } };
+    const obj = { target: { value: { id: '' } } };
     props.onChange(obj);
     setSearchTerm('');
     setIsOpen(false);

@@ -16,23 +16,31 @@ const Form = (props:propsType) => {
     com.sql({
       type:'selectAll',
       tableName:'devices'
-    }).then(res=> setDevices(res.map(i=>({
-      name:i.name,
-      id:i.id
-    }))));
+    }).then(res=> {
+      const tempDevices = res.map(i=>({
+        name:i.name,
+        id:i.id
+      }))
+      if(props.select){
+        setForm({
+          ...props.select,
+          device:tempDevices.find(i=> i.id == props.select.deviceId) || { id: '' }
+        });
+      }
+      setDevices(tempDevices);
+    });
   }, [])
 
-  useEffect(() => {
-    if(props.select){
-      setForm(props.select);
-    }
-  }, [props.select])
+  
 
   const saveClick = () => {
     if(form.id){
       com.sql({
         type:'update',
-        data:form,
+        data:{
+          name:form.name,
+          deviceId:form.device.id
+        },
         where:{id:form.id},
         tableName:'subDevices'
       }).then(i=> {
@@ -42,7 +50,10 @@ const Form = (props:propsType) => {
     }else{
       com.sql({
         type:'insert',
-        data:form,
+        data:{
+          name:form.name,
+          deviceId:form.device.id
+        },
         tableName:'subDevices'
       }).then(i=> {
         props.afterSaved();

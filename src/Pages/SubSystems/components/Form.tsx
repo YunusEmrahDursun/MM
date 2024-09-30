@@ -16,24 +16,30 @@ const Form = (props:propsType) => {
     com.sql({
       type:'selectAll',
       tableName:'systems'
-    }).then(res=> setSystems(res.map(i=>({
-      name:i.name,
-      id:i.id
-    }))));
+    }).then(res=> {
+      const tempSystems = res.map(i=>({
+        name:i.name,
+        id:i.id
+      }))
+      if(props.select){
+        setForm({
+          ...props.select,
+          system:tempSystems.find(i=> i.id == props.select.systemId) || { id: '' }
+        });
+      }
+      setSystems(tempSystems);
+    });
   }, [])
   
-  useEffect(() => {
-    if(props.select){
-      setForm(props.select);
-    }
-    
-  }, [props.select])
-
   const saveClick = () => {
     if(form.id){
+      debugger
       com.sql({
         type:'update',
-        data:form,
+        data:{
+          name:form.name,
+          systemId:form.system.id
+        },
         where:{id:form.id},
         tableName:'subSystems'
       }).then(i=> {
@@ -43,7 +49,10 @@ const Form = (props:propsType) => {
     }else{
       com.sql({
         type:'insert',
-        data:form,
+        data:{
+          name:form.name,
+          systemId:form.system.id
+        },
         tableName:'subSystems'
       }).then(i=> {
         props.afterSaved();
