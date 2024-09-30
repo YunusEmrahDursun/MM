@@ -24,6 +24,8 @@ import Stocks from '../Pages/Stocks';
 import Calender from '../Pages/Calender';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SubSystems from 'Pages/SubSystems';
+import SubDevices from 'Pages/SubDevices';
 const Workspace = () => {
   const { state, dispatch } = useGlobalState();
 
@@ -41,7 +43,9 @@ const Workspace = () => {
               <Route path="/fault" element={<Fault />} />
               <Route path="/sides" element={<Sides />} />
               <Route path="/systems" element={<Systems />} />
+              <Route path="/subSystems" element={<SubSystems />} />
               <Route path="/devices" element={<Devices />} />
+              <Route path="/subDevices" element={<SubDevices />} />
               <Route path="/periyods" element={<Periyods />} />
               <Route path="/technicians" element={<Technicians />} />
               <Route path="/officers" element={<Officers />} />

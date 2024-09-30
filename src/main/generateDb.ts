@@ -12,11 +12,26 @@ const create = () => {
         deleted INTEGER DEFAULT 0
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS subSystems (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        systemId INTEGER,
+        deleted INTEGER DEFAULT 0
+    )`);
+
     db.run(`CREATE TABLE IF NOT EXISTS devices (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         deleted INTEGER DEFAULT 0
     )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS subDevices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        deviceId INTEGER,
+        deleted INTEGER DEFAULT 0
+    )`);
+    
 
     db.run(`CREATE TABLE IF NOT EXISTS sides (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
