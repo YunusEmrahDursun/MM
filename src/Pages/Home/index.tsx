@@ -15,32 +15,7 @@ interface dataType{
   faultsAylik:any[],
 }
 
-const initialEvents = [
-  {
-    id: 1,
-    title: "Daha önce eklenen not",
-    start: new Date(),
-    end: new Date(),
-  },
-  {
-    id: 2,
-    title: "Daha önce eklenen not",
-    start: new Date(),
-    end: new Date(),
-  },
-  {
-    id: 3,
-    title: "Daha önce eklenen not",
-    start: new Date(),
-    end: new Date(),
-  },
-  {
-    id: 4,
-    title: "Daha önce eklenen not",
-    start: new Date(),
-    end: new Date(),
-  }
-];
+const initialEvents:any = [];
 
 function Home() {
   const navigate = useNavigate();
@@ -72,7 +47,11 @@ function Home() {
         WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
         GROUP BY ay
         ORDER BY ay;` }),
-    ]).then(([maintenances, faults, maintenancesAylik, faultsAylik]) => {
+      com.sql({
+        type:'selectAll',
+        tableName:'calender'
+      })
+    ]).then(([maintenances, faults, maintenancesAylik, faultsAylik, calendar]) => {
       const maintenanceCounts = Array(12).fill(0);
       const faultsCounts = Array(12).fill(0);
 
@@ -92,8 +71,43 @@ function Home() {
         maintenancesAylik:maintenanceCounts,
         faultsAylik:faultsCounts
       })
+      const tempEvents:any = [];
+      calendar.forEach(i => {
+        const arr = JSON.parse(i.data);
+        arr.forEach(item => {
+          item.aylar.forEach((ay,ayIndex) =>{
+            if(ay.includes('#')){
+              const tmp = ay.replace(/#/g,'').split('-');
+              tempEvents.push({
+                title: item.sistem + '-' + item.altSistem + ' ('+ item.period +')',
+                start:new Date(i.year, ayIndex, tmp[0]),
+                end:new Date(i.year, ayIndex, tmp[1]),
+                sistem:item.sistem,
+                altSistem:item.altSistem,
+                period:item.period,
+              })
+            }
+            else if(ay.trim() != '-'){
+              const splitedAy = ay.split('-');
+              splitedAy.forEach(gun => {
+                tempEvents.push({
+                  title: item.sistem + '-' + item.altSistem + ' ('+ item.period +')',
+                  start:new Date(i.year, ayIndex, gun),
+                  end:new Date(i.year, ayIndex, gun),
+                  sistem:item.sistem,
+                  altSistem:item.altSistem,
+                  period:item.period,
+                })
+              });
+              
+            }
 
-
+            
+          })
+          
+        });
+      });
+      setEvents(tempEvents)
     }).catch(error => {
 
     });
@@ -112,7 +126,7 @@ function Home() {
   };
 
   const handleEventClick = (e) => {
-    console.log(e)
+    navigate('/maintenance?to=add', { state: e })
   };
 
   const onClose = () => {
@@ -161,7 +175,7 @@ function Home() {
           </div>
       </div>
       <div className="col-12" >
-        <div className="bg-light rounded p-4" style={{ height: "600px" }}>
+        <div className="bg-light rounded p-4" style={{ height: 800 }}>
           <Calendar
             localizer={localizer}
             events={events}
@@ -173,7 +187,7 @@ function Home() {
             onDrillDown={(start) => handleDateClick(start)}
             views={['month']} 
             toolbar={true}    
-            style={{ height: 500 }}
+            style={{ height: 700 }}
             messages={{
               next: "Sonraki",
               previous: "Önceki",

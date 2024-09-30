@@ -96,6 +96,7 @@ const create = () => {
         year TEXT,
         name TEXT,
         content TEXT,
+        data TEXT,
         deleted INTEGER DEFAULT 0
       )`);
 

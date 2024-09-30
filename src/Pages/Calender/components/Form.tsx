@@ -6,14 +6,14 @@ interface propsType{
   afterSaved:Function
   select:any
 }
-const initialForm = {name:'', year:'', content:''};
+const initialForm = {name:'', year:'', content:'',data: ''};
 
 const Form = (props:propsType) => {
   const [form, setForm] = useState<any>(initialForm);
   const [data, setData] = useState<any>(null);
   useEffect(() => {
     if(props.select){
-      setForm(props.select);
+      contentChange(props.select, props.select.content);
     }
   }, [props.select])
 
@@ -45,54 +45,60 @@ const Form = (props:propsType) => {
     setForm({...form, [key]:e.target.value})
   }
 
-  useEffect(() => {
-    if(form.content){
-      let a:any = form.content;
-      a = a.replace(/CİHAZ.*ARALIK/,'').replace(/((-|\d)*)\nHaftası/g, (m, s1)=>{
-        return '#' + s1 + '#';
-      }).replace(/\n/g, '\\n')
-      .replace(/\t/g, '\\t');
-      const regex = /\\n(.*?)\\t/gm;
-      let matches = [...a.matchAll(regex).filter(i=> i[0]!= '\\n\\t')];
+  const contentChange = (item,text) => { 
+    const tempForm = {...item};
+    tempForm.content = text;
+    let a:any = tempForm.content;
+    a = a.replace(/CİHAZ.*ARALIK/,'').replace(/((-|\d)*)\nHaftası/g, (m, s1)=>{
+      return '#' + s1 + '#';
+    }).replace(/\n/g, '\\n')
+    .replace(/\t/g, '\\t');
+    const regex = /\\n(.*?)\\t/gm;
+    let matches = [...a.matchAll(regex).filter(i=> i[0]!= '\\n\\t')];
 
-      let result = [];
+    let result = [];
 
-      for (let i = 0; i < matches.length - 1; i++) {
-        const start = matches[i].index;
-        const end = matches[i + 1].index;
-        //@ts-ignore
-        result.push(a.slice(start, end));
-      }
-
-      if (matches.length > 0) {
-        //@ts-ignore
-        result.push(a.slice(matches[matches.length - 1].index));
-      }
-      const tempData:any[] = [];
-      result.forEach((i:string)=> {
-        let sistem = '', altSistem = '';
-
-        let str = i;
-        str = str.replace(/\\n(.*?)\\t/,(m,s1:any)=> {
-          const sistemArr = s1.split('-');
-          sistem = sistemArr[0].trim();
-          altSistem = sistemArr[1]?.trim() || '';
-          return ''
-        })
-        let splitArr = str.split(/(\d{0,1}\s{0,1}[A-Z]+)/gm).filter(Boolean);
-        for (let index = 0; index < splitArr.length; index+=2) {
-          let dayArr = splitArr[index+1].replace('\\t','').replace('\\n\\t','').split('\\t');
-
-          tempData.push([sistem,altSistem,splitArr[index]].concat(dayArr))
-          
-        }
-        
-      })
-      console.log(tempData)
-      setData(tempData)
+    for (let i = 0; i < matches.length - 1; i++) {
+      const start = matches[i].index;
+      const end = matches[i + 1].index;
+      //@ts-ignore
+      result.push(a.slice(start, end));
     }
-  }, [form.content])
-  
+
+    if (matches.length > 0) {
+      //@ts-ignore
+      result.push(a.slice(matches[matches.length - 1].index));
+    }
+    const tempData:any[] = [];
+    const tempDataJson:any[] = [];
+    result.forEach((i:string)=> {
+      let sistem = '', altSistem = '';
+
+      let str = i;
+      str = str.replace(/\\n(.*?)\\t/,(m,s1:any)=> {
+        const sistemArr = s1.split('-');
+        sistem = sistemArr[0].trim();
+        altSistem = sistemArr[1]?.trim() || '';
+        return ''
+      })
+      let splitArr = str.split(/(\d{0,1}\s{0,1}[A-Z]+)/gm).filter(Boolean);
+      for (let index = 0; index < splitArr.length; index+=2) {
+        let dayArr = splitArr[index+1].replace('\\t','').replace('\\n\\t','').split('\\t');
+        tempDataJson.push({
+          sistem,
+          altSistem,
+          period:splitArr[index],
+          aylar:dayArr
+        })
+        tempData.push([sistem,altSistem,splitArr[index]].concat(dayArr))
+        
+      }
+      
+    })
+    tempForm.data = JSON.stringify(tempDataJson);
+    setForm(tempForm);
+    setData(tempData);
+  }
   return ( <>
       <Layout>
         <div className="row">
@@ -108,7 +114,7 @@ const Form = (props:propsType) => {
 
         <div className="mb-3">
             <label className="form-label">İçerik</label>
-            <textarea className="form-control" value={form.content} onChange={(e)=> formChange(e,'content')} style={{height:150}}></textarea>
+            <textarea className="form-control" value={form.content} onChange={(e)=> contentChange(form, e.target.value)} style={{height:150}}></textarea>
         </div>
        
         <button className="btn btn-primary" onClick={saveClick}>Kaydet</button>

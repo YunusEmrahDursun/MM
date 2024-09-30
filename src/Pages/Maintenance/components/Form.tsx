@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { com, Layout, Select, generatePdfBakim } from "support";
 import { toast } from 'react-toastify';
 import moment from "moment";
+import { useLocation } from "react-router-dom";
 const initialForm = {
   name:'',
   birlik:{name:'', id:''},
@@ -35,7 +36,8 @@ function Form(props:propsType) {
   const [malzemeList, setMalzemeList] = useState<any[]>([]);
   const [tempMalzemeList, setTempMalzemeList] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const location = useLocation();
+  
   useEffect(() => {
     getData();
   }, []);
@@ -79,6 +81,24 @@ function Form(props:propsType) {
         } catch (error) {
 
         }
+      }else if(location.state){
+        const item:any = location.state;
+        console.log(item)
+        temp = {...initialForm};
+
+        if (sidesRes.length === 1) {
+          temp.birlik = sidesRes[0];
+          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD');
+        }
+        if (techniciansRes.length === 1) {
+          temp.personel = techniciansRes[0]
+        }
+        if (officersRes.length === 1) {
+          temp.yonetici = officersRes[0]
+        }
+        temp.baslangicTarihi = moment(item.start).format('DD.MM.YYYY');
+        temp.bitisTarihi = moment(item.end).format('DD.MM.YYYY');
+        temp.periyod = periyodsRes.find(i=> i.name == item.period ) || { id: '' }
       }else{
         temp = {...initialForm};
 

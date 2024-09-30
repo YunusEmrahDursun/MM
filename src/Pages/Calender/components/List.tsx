@@ -63,6 +63,7 @@ const List = (props:propsType) => {
                     [
                         { label:'#',key:'id',type:'number'},
                         { label:'Ad',key:'name',type:'string'},
+                        { label:'Yıl',key:'year',type:'string'},
                         { label:'',key:'button'},
                     ]
                 }
