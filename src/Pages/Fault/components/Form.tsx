@@ -4,8 +4,9 @@ import { toast } from 'react-toastify';
 import moment from "moment";
 const initialForm = {
   name:'',
-  birlik:{name:'', id:''},
-  sistem:{name:'', id:'', shortName:''},
+  birlik:{name:'', id:'', shortName:''},
+  sistem:{name:'', id:''},
+  subSistem:{name:'', id:''},
   kontrolNo:'',
   baslangicTarihi: moment().format('DD.MM.YYYY'),
   baslangicSaati:'',
@@ -28,6 +29,8 @@ function Form(props:propsType) {
   const [form, setForm] = useState<any>(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
   const [sistemler, setSistemler] = useState<null | []>(null);
+  const [subSistemler, setSubSistemler] = useState<any[]>([]);
+  const [showSubSistemler, setShowSubSistemler] = useState<any[]>([]);
   const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
   const [yoneticiler, setYoneticiler] = useState<null | []>(null);
   const [malzemeler, setMalzemeler] = useState<null | []>(null);
@@ -47,13 +50,15 @@ function Form(props:propsType) {
       com.sql({ type: 'selectAll', tableName: 'technicians' }),
       com.sql({ type: 'selectAll', tableName: 'officers' }),
       com.sql({ type: 'selectAll', tableName: 'stocks' }),
-    ]).then(([sidesRes, systemsRes,  techniciansRes, officersRes, stocksRes]) => {
+      com.sql({ type: 'selectAll', tableName: 'subSystems' }),
+    ]).then(([sidesRes, systemsRes,  techniciansRes, officersRes, stocksRes, subSystemsRes]) => {
       let temp;
       if(props.select){
         temp = {
           ...props.select,
           birlik: sidesRes.find(i=> i.id == props.select.birlik ) || { id: '' },
           sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
+          subSistem: subSystemsRes.find(i=> i.id == props.select.subSistem ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
           kalite: techniciansRes.find(i=> i.id == props.select.kalite ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
@@ -72,6 +77,7 @@ function Form(props:propsType) {
 
             }
           })
+          setShowSubSistemler(subSystemsRes.filter(i=> i.systemId == props.select.sistem ))
           setMalzemeList(tempMalzeme);
           setTempMalzemeList(tempMalzeme);
         } catch (error) {
@@ -90,10 +96,12 @@ function Form(props:propsType) {
         if (officersRes.length === 1) {
           temp.yonetici = officersRes[0]
         }
+        setShowSubSistemler(showSubSistemler);
       }
 
       setBirlikler(sidesRes);
       setSistemler(systemsRes);
+      setSubSistemler(subSystemsRes);
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
       setMalzemeler(stocksRes);
@@ -110,6 +118,7 @@ function Form(props:propsType) {
     generatePdfAriza({
       birlikAdi:form.birlik.name,
       sistemAdi:form.sistem.name,
+      subSistemAdi:form.subSistem.name,
       kontrolNo:form.kontrolNo,
       arizaNo:form.arizaNo,
 
@@ -141,6 +150,7 @@ function Form(props:propsType) {
           arizaNo:form.arizaNo,
           birlik:form.birlik.id,
           sistem:form.sistem.id,
+          subSistem:form.subSistem.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
@@ -215,6 +225,7 @@ function Form(props:propsType) {
           arizaNo:form.arizaNo,
           birlik:form.birlik.id,
           sistem:form.sistem.id,
+          subSistem:form.subSistem.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
@@ -244,7 +255,18 @@ function Form(props:propsType) {
   const formChange = (e, key) => {
     const temp = {...form};
 
-    if(key == 'birlik'){
+    if(key == 'sistem'){
+      if(e.target.value.id){
+        setShowSubSistemler(subSistemler.filter(i=> i.id == e.target.value.id))
+      }
+      else{
+        temp.subSistem = {id:''}
+        setShowSubSistemler(subSistemler)
+      }
+      temp[key] = e.target.value;
+
+    }
+    else if(key == 'birlik'){
       if(e.target.value.shortName){
         temp.kontrolNo = e.target.value.shortName + '-' + moment().format('YYMMDD') || '';
       }else{
@@ -320,13 +342,17 @@ function Form(props:propsType) {
   return (
     <Layout>
       <div className="row">
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Birlik Adı</label>
             <Select placeHolder="Birlik Seçiniz!" values={birlikler} value={form.birlik} onChange={(e)=> formChange(e,'birlik')}/>
         </div>
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Sistem Adı</label>
             <Select placeHolder="Sistem Seçiniz!" values={sistemler} value={form.sistem} onChange={(e)=> formChange(e,'sistem')}/>
+        </div>
+        <div className="col-sm-12 col-xl-4 mb-3">
+            <label className="form-label">Alt Sistem Adı</label>
+            <Select placeHolder="Alt Sistem Seçiniz!" values={showSubSistemler} value={form.subSistem} onChange={(e)=> formChange(e,'subSistem')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kontrol No</label>

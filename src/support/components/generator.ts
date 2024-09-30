@@ -13,6 +13,7 @@ function getBaseArizaFormu(){
 function generatePdfBakim(obj:{
   birlikAdi,
   sistemAdi,
+  subSistemAdi,
   kontrolNo,
   baslangicTarihi,
   baslangicSaati,
@@ -45,7 +46,7 @@ function generatePdfBakim(obj:{
   doc.setFontType("normal");
 
   doc.text(obj.birlikAdi || '', 34, 35);
-  doc.text(obj.sistemAdi || '', 122, 35);
+  doc.text((obj.sistemAdi + '-' + obj.subSistemAdi) || '', 122, 35);
   doc.text(obj.kontrolNo || '', 232, 35);
 
   doc.text(obj.baslangicTarihi +( obj.baslangicSaati ? " / "+ obj.baslangicSaati : "" ), 60, 55);
@@ -86,6 +87,7 @@ function generatePdfBakim(obj:{
 function generatePdfAriza(obj:{
   birlikAdi,
   sistemAdi,
+  subSistemAdi,
   kontrolNo,
   arizaNo,
   baslangicTarihi,
@@ -119,7 +121,7 @@ function generatePdfAriza(obj:{
   doc.setFontType("normal");
 
   doc.text(obj.birlikAdi || '', 37, 34);
-  doc.text(obj.sistemAdi || '', 122, 34);
+  doc.text((obj.sistemAdi + '-' +obj.subSistemAdi) || '', 122, 34);
   doc.text(obj.kontrolNo || '', 232, 34);
 
   doc.text(obj.arizaNo || '', 37, 50);

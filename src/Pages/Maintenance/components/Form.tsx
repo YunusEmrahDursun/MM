@@ -5,8 +5,9 @@ import moment from "moment";
 import { useLocation } from "react-router-dom";
 const initialForm = {
   name:'',
-  birlik:{name:'', id:''},
-  device:{name:'', id:'', shortName:''},
+  birlik:{name:'', id:'', shortName:''},
+  device:{name:'', id:''},
+  subDevice:{name:'', id:''},
   periyod:{name:'', id:''},
   kontrolNo:'',
   baslangicTarihi: moment().format('DD.MM.YYYY'),
@@ -28,6 +29,8 @@ function Form(props:propsType) {
   const [form, setForm] = useState<any>(initialForm);
   const [birlikler, setBirlikler] = useState<null | []>(null);
   const [devices, setDevices] = useState<null | []>(null);
+  const [subDevices, setSubDevices] = useState< any>([]);
+  const [showSubDevices, setShowSubDevices] = useState<[]>([]);
   const [periyotlar, setPeriyotlar] = useState<null | []>(null);
   const [teknisyenler, setTeknisyenler] = useState<null | []>(null);
   const [yoneticiler, setYoneticiler] = useState<null | []>(null);
@@ -50,13 +53,15 @@ function Form(props:propsType) {
       com.sql({ type: 'selectAll', tableName: 'technicians' }),
       com.sql({ type: 'selectAll', tableName: 'officers' }),
       com.sql({ type: 'selectAll', tableName: 'stocks' }),
-    ]).then(([sidesRes, devicesRes, periyodsRes, techniciansRes, officersRes, stocksRes]) => {
+      com.sql({ type: 'selectAll', tableName: 'subDevices' }),
+    ]).then(([sidesRes, devicesRes, periyodsRes, techniciansRes, officersRes, stocksRes,subDevicesRes]) => {
       let temp;
       if(props.select){
         temp = {
           ...props.select,
           birlik: sidesRes.find(i=> i.id == props.select.birlik ) || { id: '' },
           device: devicesRes.find(i=> i.id == props.select.device ) || { id: '' },
+          subDevice: subDevicesRes.find(i=> i.id == props.select.subDevice ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
           kalite: techniciansRes.find(i=> i.id == props.select.kalite ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
@@ -76,6 +81,7 @@ function Form(props:propsType) {
 
             }
           })
+          setShowSubDevices(subDevicesRes.filter(i=> i.deviceId == props.select.device ))
           setMalzemeList(tempMalzeme);
           setTempMalzemeList(tempMalzeme);
         } catch (error) {
@@ -112,10 +118,12 @@ function Form(props:propsType) {
         if (officersRes.length === 1) {
           temp.yonetici = officersRes[0]
         }
+        setShowSubDevices(subDevicesRes)
       }
 
       setBirlikler(sidesRes);
       setDevices(devicesRes);
+      setSubDevices(subDevicesRes);
       setPeriyotlar(periyodsRes);
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
@@ -133,6 +141,7 @@ function Form(props:propsType) {
     generatePdfBakim({
       birlikAdi:form.birlik.name,
       sistemAdi:form.device.name,
+      subSistemAdi:form.subDevice.name,
       kontrolNo:form.kontrolNo,
 
       baslangicTarihi:form.baslangicTarihi,
@@ -161,6 +170,7 @@ function Form(props:propsType) {
           kontrolNo:form.kontrolNo,
           birlik:form.birlik.id,
           device:form.device.id,
+          subDevice:form.subDevice.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
@@ -240,6 +250,7 @@ function Form(props:propsType) {
           kontrolNo:form.kontrolNo,
           birlik:form.birlik.id,
           device:form.device.id,
+          subDevice:form.subDevice.id,
           personel:form.personel.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
@@ -269,8 +280,17 @@ function Form(props:propsType) {
   }
   const formChange = (e, key) => {
     const temp = {...form};
-
-    if(key == 'birlik'){
+    if(key == 'device'){
+      if(e.target.value.id){
+        setShowSubDevices(subDevices.filter(i=> i.id == e.target.value.id))
+      }
+      else{
+        temp.subDevice = {id:''}
+        setShowSubDevices(subDevices)
+      }
+      temp[key] = e.target.value;
+    }
+    else if(key == 'birlik'){
       if(e.target.value.shortName){
         temp.kontrolNo = e.target.value.shortName + '-' + moment().format('YYMMDD') || '';
       }else{
@@ -346,13 +366,17 @@ function Form(props:propsType) {
   return (
     <Layout>
       <div className="row">
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Birlik Adı</label>
             <Select placeHolder="Birlik Seçiniz!" values={birlikler} value={form.birlik} onChange={(e)=> formChange(e,'birlik')}/>
         </div>
-        <div className="col-sm-12 col-xl-6 mb-3">
+        <div className="col-sm-12 col-xl-4 mb-3">
             <label className="form-label">Cihaz Adı</label>
-            <Select placeHolder="Sistem Seçiniz!" values={devices} value={form.device} onChange={(e)=> formChange(e,'device')}/>
+            <Select placeHolder="Cihaz Seçiniz!" values={devices} value={form.device} onChange={(e)=> formChange(e,'device')}/>
+        </div>
+        <div className="col-sm-12 col-xl-4 mb-3">
+            <label className="form-label">Alt Cihaz Adı</label>
+            <Select placeHolder="Alt Cihaz Seçiniz!" values={showSubDevices} value={form.subDevice} onChange={(e)=> formChange(e,'subDevice')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kontrol No</label>
