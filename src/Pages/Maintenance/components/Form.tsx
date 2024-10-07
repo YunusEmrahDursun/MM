@@ -89,7 +89,6 @@ function Form(props:propsType) {
         }
       }else if(location.state){
         const item:any = location.state;
-        console.log(item)
         temp = {...initialForm};
 
         if (sidesRes.length === 1) {

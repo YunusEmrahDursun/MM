@@ -21,8 +21,10 @@ function Home() {
   const navigate = useNavigate();
   const [events, setEvents] = useState(initialEvents);
   const [selectedDateEvents, setSelectedDateEvents] = useState<any[]>([]);
+  const [showData, setShowData] = useState<any[]>([]);
   const [modalTitle, setModalTitle] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [currentMonthMaintences, setCurrentMonthMaintences] = useState([])
   const [data, setData] = useState<dataType>({
     maintenances:0,
     faults:0,
@@ -31,7 +33,34 @@ function Home() {
   })
   useEffect(() => {
     getData();
+    handleNavigate();
   }, []);
+
+  useEffect(() => {
+    const arr:any = [];
+    const tempEvents = [...events];
+    console.log(currentMonthMaintences)
+    currentMonthMaintences.forEach((m:any)=> {
+      const found = tempEvents.find(e=> e.sistemId == m.device && e.altSistemId == m.subDevice && moment(e.start).format('DD-MM-YYYY') == moment(m.baslangicTarihi).format('DD-MM-YYYY'))
+      if(found){
+        found.finish = true;
+      }else{
+        arr.push({
+          "title":m.deviceName + '-' + m.subDeviceName + ' ('+m.periyodName +')',
+          "start":new Date(m.baslangicTarihi),
+          "end":new Date(m.bitisTarihi),
+          "sistem":m.deviceName,
+          "altSistem":m.subDeviceName,
+          "period":m.periyodName,
+          "sistemId":m.device,
+          "altSistemId":m.subDevice,
+          "finish":true
+        })
+      }
+    })
+    setShowData([...tempEvents, ...arr ])
+  }, [currentMonthMaintences, events])
+  
 
   const getData = () => {
     Promise.all([
@@ -121,7 +150,7 @@ function Home() {
 
   const handleDateClick = (date) => {
     const formattedDate = moment(date).format("DD-MM-YYYY");
-    const dateEvents = events.filter(event =>
+    const dateEvents = showData.filter(event =>
       moment(event.start).format("DD-MM-YYYY") === formattedDate
     );
     setSelectedDateEvents(dateEvents);
@@ -139,6 +168,30 @@ function Home() {
     setModalTitle('');
   };
 
+  const handleNavigate = (date = moment().valueOf() ) => {
+    const monthYear = moment(date).format('MM/YYYY'); 
+    const [month, year] = monthYear.split('/');
+    com.sql({ type: 'customQuery', query: `
+    SELECT m.*, d.name as deviceName, sd.name as subDeviceName, p.name as periyodName 
+    FROM maintenances m
+    JOIN devices d ON m.device = d.id
+    JOIN subDevices sd ON m.subDevice = sd.id
+    JOIN periyods p ON m.periyod = p.id
+    WHERE strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch')) = '${month}'
+      AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch')) = '${year}'
+  ` }).then(res=>{
+      setCurrentMonthMaintences(res);
+    })
+  };
+
+  const eventStyleGetter = (event) => {
+    return {
+      style: {
+        backgroundColor: event.finish ? 'green' : '#3174ad',
+        color: 'white',
+      }
+    };
+  };
 
   return (
     <div className="row g-4">
@@ -182,7 +235,7 @@ function Home() {
         <div className="bg-light rounded p-4" style={{ height: 800 }}>
           <Calendar
             localizer={localizer}
-            events={events}
+            events={showData}
             startAccessor="start"
             endAccessor="end"
             selectable
@@ -192,6 +245,8 @@ function Home() {
             views={['month']} 
             toolbar={true}    
             style={{ height: 700 }}
+            onNavigate={handleNavigate}
+            eventPropGetter={eventStyleGetter}
             messages={{
               next: "Sonraki",
               previous: "Önceki",
@@ -224,7 +279,7 @@ function Home() {
             {selectedDateEvents.length > 0 ? (
               <ul className="event-list">
                 {selectedDateEvents.map(event => (
-                  <li key={event.id} className="event-item" onClick={() => handleEventClick(event)}>
+                  <li key={event.id} className={"event-item " + (event.finish ? 'active' : '') } onClick={() => handleEventClick(event)}>
                     {event.title}
                   </li>
                 ))}

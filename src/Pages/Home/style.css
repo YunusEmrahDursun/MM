@@ -73,7 +73,10 @@
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
-
+.event-item.active{
+  background-color: green;
+  color: white;
+}
 .event-item:hover {
   background-color: #e2e6ea;
   transform: scale(1.02);

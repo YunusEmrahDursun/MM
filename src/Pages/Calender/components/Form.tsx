@@ -15,6 +15,10 @@ const Form = (props:propsType) => {
   const [notFound, setNotFound] = useState<any>([]);
 
   useEffect(() => {
+    init();
+  }, [])
+
+  const init = () => { 
     Promise.all([
       com.sql({ type: 'selectAll', tableName: 'devices' }),
       com.sql({ type: 'selectAll', tableName: 'subDevices' }),
@@ -28,7 +32,7 @@ const Form = (props:propsType) => {
     }).catch(error => {
 
     });
-  }, [])
+  }
   
   const saveClick = () => {
     if(form.id){
@@ -136,6 +140,55 @@ const Form = (props:propsType) => {
       setNotFound([]);
     }
   }
+  const addSystem = (item, index) => { 
+
+    if(item.type == 'Cihaz'){
+
+      com.sql({ type:'selectQuery', where:{name: item.name}, tableName:'devices' }).then(i=> {
+        if(i.length == 0){
+          com.sql({
+            type:'insert',
+            data:{name: item.name},
+            tableName:'devices'
+          }).then(_=> {
+            toast("Kaydedildi!");
+            const temp = [...notFound];
+            temp.splice(index,1);
+            setNotFound(temp);
+            init();
+          })
+        }
+      })
+
+    }else if(item.type == 'Alt Cihaz'){
+      
+      com.sql({ type:'selectQuery', where:{name: item.sistem}, tableName:'devices' }).then(i=> {
+        if(i.length != 0){
+          com.sql({ type:'selectQuery', where:{name: item.name}, tableName:'subDevices' }).then(s=> {
+            if(s.length == 0){
+              com.sql({
+                type:'insert',
+                data:{name: item.name, deviceId:s.id},
+                tableName:'subDevices'
+              }).then(_=> {
+                toast("Kaydedildi!");
+                const temp = [...notFound];
+                temp.splice(index,1);
+                setNotFound(temp);
+                init();
+              })
+            }
+          })
+        }else{
+          toast("Üst Sistem Bulunamadı!");
+        }
+      })
+
+      
+    }
+
+    console.log(item)
+  }
   return ( <>
       <Layout>
         <div className="row">
@@ -158,8 +211,8 @@ const Form = (props:propsType) => {
       </Layout>
 
       {
-        notFound.length ? notFound.map((i,index)=> <div key={index} className='btn-danger' style={{padding:5,marginBottom:5}}>
-          {i.name} {i.type} Bulunamadı. {i.sistem && `( Üst Cihaz : ${i.sistem})`} <br/> 
+        notFound.length ? notFound.map((i,index)=> <div key={index} style={{padding:5,marginBottom:5}}>
+          <button className="btn btn-success" onClick={()=> addSystem(i, index)}>Kaydet</button> {i.name} {i.type} Bulunamadı. {i.sistem && `( Üst Cihaz : ${i.sistem})`}  <br/> 
         </div> ) : <></>
       }
       { data && <Layout>
