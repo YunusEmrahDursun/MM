@@ -283,6 +283,7 @@ function Form(props:propsType) {
   }
   const formChange = (e, key) => {
     const temp = {...form};
+
     if(key == 'subDevice'){
       temp.dokuman = e.target.value.dokuman;
       const malzemeArr = [];
@@ -335,6 +336,22 @@ function Form(props:propsType) {
         }
       }
       temp[key] = inputValue;
+      if(key == 'baslangicTarihi' && temp[key].length == 10){
+        const [day, month, year] = temp[key].split('.');
+        com.sql({
+          type: 'customQuery',
+          query: `
+          SELECT m.* 
+          FROM maintenances m
+          WHERE m.deleted = 0 
+            AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
+            AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
+            AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+          `
+        }).then(res => {
+          console.log(res);
+        });
+      }
     }else if(key == 'baslangicSaati' || key == 'bitisSaati'){
       let inputValue = e.target.value.replace(/\D/g, '');
       if (inputValue.length > 2) {

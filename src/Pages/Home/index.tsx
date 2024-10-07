@@ -39,9 +39,8 @@ function Home() {
   useEffect(() => {
     const arr:any = [];
     const tempEvents = [...events];
-    console.log(currentMonthMaintences)
     currentMonthMaintences.forEach((m:any)=> {
-      const found = tempEvents.find(e=> e.sistemId == m.device && e.altSistemId == m.subDevice && moment(e.start).format('DD-MM-YYYY') == moment(m.baslangicTarihi).format('DD-MM-YYYY'))
+      const found = tempEvents.find(e=> e.sistemId == m.device && e.altSistemId == m.subDevice && m.periyodName == e.period && moment(e.start).format('DD-MM-YYYY') == moment(m.baslangicTarihi).format('DD-MM-YYYY'))
       if(found){
         found.finish = true;
       }else{
@@ -66,14 +65,14 @@ function Home() {
     Promise.all([
       com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM maintenances where deleted = 0;' }),
       com.sql({ type: 'customQuery', query: 'SELECT COUNT(*) as count FROM faults where deleted = 0;' }),
-      com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch')) AS ay, COUNT(*) AS bakim_sayisi
+      com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch', '+3 hours')) AS ay, COUNT(*) AS bakim_sayisi
         FROM maintenances
-        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
+        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${moment().format('YYYY')}'
         GROUP BY ay
         ORDER BY ay;` }),
-      com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch')) AS ay, COUNT(*) AS bakim_sayisi
+      com.sql({ type: 'customQuery', query: `SELECT strftime('%m', datetime(baslangicTarihi / 1000, 'unixepoch', '+3 hours')) AS ay, COUNT(*) AS bakim_sayisi
         FROM faults
-        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch')) = '${moment().format('YYYY')}'
+        WHERE deleted = 0 AND strftime('%Y', datetime(baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${moment().format('YYYY')}'
         GROUP BY ay
         ORDER BY ay;` }),
       com.sql({
@@ -177,9 +176,10 @@ function Home() {
     JOIN devices d ON m.device = d.id
     JOIN subDevices sd ON m.subDevice = sd.id
     JOIN periyods p ON m.periyod = p.id
-    WHERE strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch')) = '${month}'
-      AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch')) = '${year}'
+    WHERE m.deleted = 0 AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
+      AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
   ` }).then(res=>{
+      console.log(res)
       setCurrentMonthMaintences(res);
     })
   };
