@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { com, Layout, Select, generatePdfBakim } from "support";
 import { toast } from 'react-toastify';
 import moment from "moment";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 const initialForm = {
   name:'',
   birlik:{name:'', id:'', shortName:''},
@@ -87,6 +87,7 @@ function Form(props:propsType) {
         } catch (error) {
 
         }
+        setForm(temp);
       }else if(location.state){
         const item:any = location.state;
         temp = {...initialForm};
@@ -109,6 +110,29 @@ function Form(props:propsType) {
         temp.subDevice = subDevicesRes.find(i=> i.id == item.altSistemId ) || { id: '' };
         temp.dokuman = subDevicesRes.find(i=> i.id == item.altSistemId )?.dokuman || '';
 
+        const [day, month, year] = temp['baslangicTarihi'].split('.');
+        com.sql({
+          type: 'customQuery',
+          query: `
+          SELECT m.* 
+          FROM maintenances m
+          WHERE m.deleted = 0 
+            AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
+            AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
+            AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            ORDER BY m.baslangicTarihi DESC
+          `
+        }).then(res => {
+          if(res.length > 0 && res[0].kontrolNo != '' && res[0].birlik == temp['birlik'].id){
+            const str = res[0].kontrolNo;
+            const lastTwoDigits = parseInt(str.slice(-2));
+            const incrementedDigits = (lastTwoDigits + 1).toString().padStart(2, '0');
+            const newStr = str.slice(0, -2) + incrementedDigits;
+            temp['kontrolNo'] = newStr;
+          }
+          setForm(temp);
+        });
+
       }else{
         temp = {...initialForm};
 
@@ -122,6 +146,28 @@ function Form(props:propsType) {
         if (officersRes.length === 1) {
           temp.yonetici = officersRes[0]
         }
+        const [day, month, year] = moment().format('DD.MM.YYYY').split('.');
+        com.sql({
+          type: 'customQuery',
+          query: `
+          SELECT m.* 
+          FROM maintenances m
+          WHERE m.deleted = 0 
+            AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
+            AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
+            AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            ORDER BY m.baslangicTarihi DESC
+          `
+        }).then(res => {
+          if(res.length > 0 && res[0].kontrolNo != '' && res[0].birlik == temp['birlik'].id){
+            const str = res[0].kontrolNo;
+            const lastTwoDigits = parseInt(str.slice(-2));
+            const incrementedDigits = (lastTwoDigits + 1).toString().padStart(2, '0');
+            const newStr = str.slice(0, -2) + incrementedDigits;
+            temp['kontrolNo'] = newStr;
+          }
+          setForm(temp);
+        });
         setShowSubDevices(subDevicesRes)
       }
       setBirlikler(sidesRes);
@@ -131,7 +177,7 @@ function Form(props:propsType) {
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
       setMalzemeler(stocksRes);
-      setForm(temp);
+      
 
     }).catch(error => {
 
@@ -295,6 +341,7 @@ function Form(props:propsType) {
       })
       setMalzemeList(malzemeArr)
       temp[key] = e.target.value;
+      setForm(temp);
     }
     else if(key == 'device'){
       if(e.target.value.id){
@@ -309,6 +356,7 @@ function Form(props:propsType) {
         setShowSubDevices(subDevices)
       }
       temp[key] = e.target.value;
+      setForm(temp);
     }
     else if(key == 'birlik'){
       if(e.target.value.shortName){
@@ -318,6 +366,7 @@ function Form(props:propsType) {
       }
 
       temp[key] = e.target.value;
+      setForm(temp);
     }
     else if(key == 'baslangicTarihi' || key == 'bitisTarihi'){
       let inputValue = e.target.value.replace(/\D/g, '');
@@ -347,10 +396,20 @@ function Form(props:propsType) {
             AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
             AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
             AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            ORDER BY m.baslangicTarihi DESC
           `
         }).then(res => {
-          console.log(res);
+          if(res.length > 0 && res[0].kontrolNo != '' && res[0].birlik == temp['birlik'].id){
+            const str = res[0].kontrolNo;
+            const lastTwoDigits = parseInt(str.slice(-2));
+            const incrementedDigits = (lastTwoDigits + 1).toString().padStart(2, '0');
+            const newStr = str.slice(0, -2) + incrementedDigits;
+            temp['kontrolNo'] = newStr;
+          }
+          setForm(temp);
         });
+      }else{
+        setForm(temp);
       }
     }else if(key == 'baslangicSaati' || key == 'bitisSaati'){
       let inputValue = e.target.value.replace(/\D/g, '');
@@ -361,12 +420,15 @@ function Form(props:propsType) {
         inputValue = inputValue.slice(0, 5);
       }
       temp[key] = inputValue;
+      setForm(temp);
+
     }
     else{
       temp[key] = e.target.value;
+      setForm(temp);
+
     }
 
-    setForm(temp);
 
   }
 
