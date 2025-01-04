@@ -16,6 +16,7 @@ const initialForm = {
   aciklama:'',
   ariza:'',
   personel:{name:'', id:'', title:''},
+  personelYedek:{name:'', id:'', title:''},
   yonetici:{name:'', id:'', title:''},
   kalite:{name:'', id:'', title:''},
   arizaNo:'',
@@ -60,6 +61,7 @@ function Form(props:propsType) {
           sistem: systemsRes.find(i=> i.id == props.select.sistem ) || { id: '' },
           subSistem: subSystemsRes.find(i=> i.id == props.select.subSistem ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
+          personelYedek: techniciansRes.find(i=> i.id == props.select.personelYedek ) || { id: '' },
           kalite: techniciansRes.find(i=> i.id == props.select.kalite ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
           baslangicTarihi:moment(props.select.baslangicTarihi).format("DD.MM.YYYY"),
@@ -83,12 +85,14 @@ function Form(props:propsType) {
         } catch (error) {
 
         }
+        setForm(temp);
+
       }else{
         temp = {...initialForm};
 
         if (sidesRes.length === 1) {
           temp.birlik = sidesRes[0];
-          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD');
+          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD') + '01';
         }
         if (techniciansRes.length === 1) {
           temp.personel = techniciansRes[0]
@@ -96,6 +100,29 @@ function Form(props:propsType) {
         if (officersRes.length === 1) {
           temp.yonetici = officersRes[0]
         }
+        const [day, month, year] = moment().format('DD.MM.YYYY').split('.');
+        com.sql({
+          type: 'customQuery',
+          query: `
+          SELECT m.* 
+          FROM faults m
+          WHERE m.deleted = 0 
+            AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
+            AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
+            AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            AND m.kontrolNo != ''
+            ORDER BY m.baslangicTarihi DESC
+          `
+        }).then(res => {
+          if(res.length > 0 && res[0].kontrolNo != '' && res[0].birlik == temp['birlik'].id){
+            const str = res[0].kontrolNo;
+            const lastTwoDigits = parseInt(str.slice(-2));
+            const incrementedDigits = (lastTwoDigits + 1).toString().padStart(2, '0');
+            const newStr = str.slice(0, -2) + incrementedDigits;
+            temp['kontrolNo'] = newStr;
+          }
+          setForm(temp);
+        });
         setShowSubSistemler(showSubSistemler);
       }
 
@@ -105,7 +132,6 @@ function Form(props:propsType) {
       setTeknisyenler(techniciansRes);
       setYoneticiler(officersRes);
       setMalzemeler(stocksRes);
-      setForm(temp);
 
     }).catch(error => {
 
@@ -114,7 +140,7 @@ function Form(props:propsType) {
 
   }
 
-  const generateClick = () => {
+  const generateClick = (print:any = null) => {
     generatePdfAriza({
       birlikAdi:form.birlik.name,
       sistemAdi:form.sistem.name,
@@ -131,14 +157,16 @@ function Form(props:propsType) {
       aciklama:form.aciklama,
       dokuman:form.dokuman,
       personel:form.personel.name,
+      personelYedek:form.personelYedek.name,
       yonetici:form.yonetici.name,
       kalite:form.kalite.name,
       personelKase:form.personel.title,
+      personelYedekKase:form.personelYedek.title,
       yoneticiKase:form.yonetici.title,
       kaliteKase:form.kalite.title,
 
       malzemeler:malzemeList
-    })
+    },print)
   }
   const saveClick = () => {
     if(form.id){
@@ -152,6 +180,7 @@ function Form(props:propsType) {
           sistem:form.sistem.id,
           subSistem:form.subSistem.id,
           personel:form.personel.id,
+          personelYedek:form.personelYedek.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
           ariza:form.ariza,
@@ -227,6 +256,7 @@ function Form(props:propsType) {
           sistem:form.sistem.id,
           subSistem:form.subSistem.id,
           personel:form.personel.id,
+          personelYedek:form.personelYedek.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
           ariza:form.ariza,
@@ -411,15 +441,19 @@ function Form(props:propsType) {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Personel</label>
             <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personel} onChange={(e)=> formChange(e,'personel')}/>
         </div>
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Personel2</label>
+            <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personelYedek} onChange={(e)=> formChange(e,'personelYedek')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kalite Personeli</label>
             <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.kalite} onChange={(e)=> formChange(e,'kalite')}/>
         </div>
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Yönetici</label>
             <Select placeHolder="Yönetici Seçiniz!" values={yoneticiler} value={form.yonetici} onChange={(e)=> formChange(e,'yonetici')}/>
         </div>
@@ -486,6 +520,7 @@ function Form(props:propsType) {
       <div>
         <button className="btn btn-primary " onClick={saveClick}>Kaydet</button>
         <button className="btn btn-success ms-3" onClick={generateClick}>Rapor Oluştur</button>
+        <button className="btn btn-success ms-3" onClick={()=> generateClick(com)}>Yazdır</button>
       </div>
 
     </Layout>

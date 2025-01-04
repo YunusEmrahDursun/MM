@@ -44,6 +44,7 @@ const List = (props:propsType) => {
             sistem: systemsRes.find(i=> i.id == item.sistem ) || { id: '' },
             subSistem: subSystemsRes.find(i=> i.id == item.subSistem ) || { id: '' },
             personel: techniciansRes.find(i=> i.id == item.personel ) || { id: '' },
+            personelYedek: techniciansRes.find(i=> i.id == item.personelYedek ) || { id: '' },
             kalite: techniciansRes.find(i=> i.id == item.kalite ) || { id: '' },
             yonetici: officersRes.find(i=> i.id == item.yonetici ) || { id: '' },
             baslangicTarihi:moment(item.baslangicTarihi).format("DD.MM.YYYY"),
@@ -64,7 +65,7 @@ const List = (props:propsType) => {
             generatePdfAriza({
               birlikAdi:temp.birlik.name,
               sistemAdi:temp.sistem.name,
-              subSistemAdi:temp.subDevice.name,
+              subSistemAdi:temp.subSistem.name,
               kontrolNo:temp.kontrolNo,
               arizaNo:temp.arizaNo,
         
@@ -77,16 +78,18 @@ const List = (props:propsType) => {
               aciklama:temp.aciklama,
               dokuman:temp.dokuman,
               personel:temp.personel.name,
+              personelYedek:temp.personelYedek.name,
               yonetici:temp.yonetici.name,
               kalite:temp.kalite.name,
               personelKase:temp.personel.title,
+              personelYedekKase:temp.personelYedek.title,
               yoneticiKase:temp.yonetici.title,
               kaliteKase:temp.kalite.title,
 
               malzemeler:tempMalzeme
-            })
+            },com)
           } catch (error) {
-
+            console.log(error)
           }
         }
 

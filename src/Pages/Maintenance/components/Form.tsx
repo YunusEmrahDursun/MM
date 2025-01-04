@@ -17,6 +17,7 @@ const initialForm = {
   dokuman:'',
   aciklama:'',
   personel:{name:'', id:'', title:''},
+  personelYedek:{name:'', id:'', title:''},
   yonetici:{name:'', id:'', title:''},
   kalite:{name:'', id:'', title:''},
   malzemeler:[]
@@ -63,6 +64,7 @@ function Form(props:propsType) {
           device: devicesRes.find(i=> i.id == props.select.device ) || { id: '' },
           subDevice: subDevicesRes.find(i=> i.id == props.select.subDevice ) || { id: '' },
           personel: techniciansRes.find(i=> i.id == props.select.personel ) || { id: '' },
+          personelYedek: techniciansRes.find(i=> i.id == props.select.personelYedek ) || { id: '' },
           kalite: techniciansRes.find(i=> i.id == props.select.kalite ) || { id: '' },
           yonetici: officersRes.find(i=> i.id == props.select.yonetici ) || { id: '' },
           periyod: periyodsRes.find(i=> i.id == props.select.periyod ) || { id: '' },
@@ -94,7 +96,7 @@ function Form(props:propsType) {
 
         if (sidesRes.length === 1) {
           temp.birlik = sidesRes[0];
-          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD');
+          temp.kontrolNo = sidesRes[0].shortName + '-' + moment(item.start).format('YYMMDD') + '01';
         }
         if (techniciansRes.length === 1) {
           temp.personel = techniciansRes[0]
@@ -120,6 +122,7 @@ function Form(props:propsType) {
             AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
             AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
             AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            AND m.kontrolNo != ''
             ORDER BY m.baslangicTarihi DESC
           `
         }).then(res => {
@@ -138,7 +141,7 @@ function Form(props:propsType) {
 
         if (sidesRes.length === 1) {
           temp.birlik = sidesRes[0];
-          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD');
+          temp.kontrolNo = sidesRes[0].shortName + '-' + moment().format('YYMMDD') + '01';
         }
         if (techniciansRes.length === 1) {
           temp.personel = techniciansRes[0]
@@ -156,6 +159,7 @@ function Form(props:propsType) {
             AND strftime('%d', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${day}'
             AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
             AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
+            AND m.kontrolNo != ''
             ORDER BY m.baslangicTarihi DESC
           `
         }).then(res => {
@@ -186,7 +190,7 @@ function Form(props:propsType) {
 
   }
 
-  const generateClick = () => {
+  const generateClick = (print:any = null) => {
     generatePdfBakim({
       birlikAdi:form.birlik.name,
       sistemAdi:form.device.name,
@@ -202,13 +206,15 @@ function Form(props:propsType) {
       dokuman:form.dokuman,
       periyod:form.periyod.name,
       personel:form.personel.name,
+      personelYedek:form.personelYedek.name,
       yonetici:form.yonetici.name,
       kalite:form.kalite.name,
       personelKase:form.personel.title,
+      personelYedekKase:form.personelYedek.title,
       yoneticiKase:form.yonetici.title,
       kaliteKase:form.kalite.title,
       malzemeler:malzemeList
-    })
+    }, print)
   }
   const saveClick = () => {
     if(form.id){
@@ -221,6 +227,7 @@ function Form(props:propsType) {
           device:form.device.id,
           subDevice:form.subDevice.id,
           personel:form.personel.id,
+          personelYedek:form.personelYedek.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
           periyod:form.periyod.id,
@@ -301,6 +308,7 @@ function Form(props:propsType) {
           device:form.device.id,
           subDevice:form.subDevice.id,
           personel:form.personel.id,
+          personelYedek:form.personelYedek.id,
           yonetici:form.yonetici.id,
           kalite:form.kalite.id,
           periyod:form.periyod.id,
@@ -461,6 +469,8 @@ function Form(props:propsType) {
     setMalzemeList(temp)
 
   }
+
+ 
   return (
     <Layout>
       <div className="row">
@@ -517,15 +527,19 @@ function Form(props:propsType) {
       </div>
 
       <div className="row">
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Personel</label>
             <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personel} onChange={(e)=> formChange(e,'personel')}/>
         </div>
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Personel2</label>
+            <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.personelYedek} onChange={(e)=> formChange(e,'personelYedek')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Kalite Personeli</label>
             <Select placeHolder="Personel Seçiniz!" values={teknisyenler} value={form.kalite} onChange={(e)=> formChange(e,'kalite')}/>
         </div>
-        <div className="col-sm-12 col-xl-4 mb-3">
+        <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Yönetici</label>
             <Select placeHolder="Yönetici Seçiniz!" values={yoneticiler} value={form.yonetici} onChange={(e)=> formChange(e,'yonetici')}/>
         </div>
@@ -591,7 +605,8 @@ function Form(props:propsType) {
 
       <div>
         <button className="btn btn-primary " onClick={saveClick}>Kaydet</button>
-        <button className="btn btn-success ms-3" onClick={generateClick}>Rapor Oluştur</button>
+        <button className="btn btn-success ms-3" onClick={()=> generateClick()}>Rapor Oluştur</button>
+        <button className="btn btn-success ms-3" onClick={()=> generateClick(com)}>Yazdır</button>
       </div>
 
     </Layout>

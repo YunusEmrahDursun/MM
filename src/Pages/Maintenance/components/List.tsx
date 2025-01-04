@@ -53,6 +53,7 @@ const List = (props:propsType) => {
             device: devicesRes.find(i=> i.id == item.device ) || { id: '' },
             subDevice: subDevicesRes.find(i=> i.id == item.subDevice ) || { id: '' },
             personel: techniciansRes.find(i=> i.id == item.personel ) || { id: '' },
+            personelYedek: techniciansRes.find(i=> i.id == item.personelYedek ) || { id: '' },
             yonetici: officersRes.find(i=> i.id == item.yonetici ) || { id: '' },
             kalite: techniciansRes.find(i=> i.id == item.kalite ) || { id: '' },
             periyod: periyodsRes.find(i=> i.id == item.periyod ) || { id: '' },
@@ -86,14 +87,17 @@ const List = (props:propsType) => {
               dokuman:temp.dokuman,
               periyod:temp.periyod.name,
               personel:temp.personel.name,
+              personelYedek:temp.personelYedek.name,
               yonetici:temp.yonetici.name,
               kalite:temp.kalite.name,
               personelKase:temp.personel.title,
+              personelYedekKase:temp.personelYedek.title,
               yoneticiKase:temp.yonetici.title,
               kaliteKase:temp.kalite.title,
 
-              malzemeler:tempMalzeme
-            })
+              malzemeler:tempMalzeme,
+              
+            },com)
           } catch (error) {
   
           }

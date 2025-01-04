@@ -17,7 +17,9 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 import db from './db';
 import generateDb from './generateDb';
-
+import fs from "fs";
+const { exec } = require('child_process');
+const printer = require('pdf-to-printer');
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
@@ -29,17 +31,36 @@ export default class AppUpdater {
 generateDb.create();
 let mainWindow: BrowserWindow | null = null;
 
+
 ipcMain.handle('ipc-com', async (event, args) => {
   try {
-    const obj = JSON.parse(args);
-    const result = await db[obj.type](obj);
-    //@ts-ignore
-    return JSON.stringify(result);
+    if(args['type'] == 'print'){
+      try {
+        // Geçici bir dosya yolu oluştur
+        const tempPath = path.join(app.getPath('userData'), 'temp.pdf');
+        fs.writeFileSync(tempPath, args.data); 
+
+        printer.print(tempPath,{printDialog:true})
+        .then()
+        .catch();
+        
+      } catch (error) {
+        
+      }
+
+    }else{
+      const obj = JSON.parse(args);
+      const result = await db[obj.type](obj);
+      //@ts-ignore
+      return JSON.stringify(result);
+    }
+   
   } catch (error) {
     return JSON.stringify(error)
   }
 
 });
+
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -86,8 +107,12 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: true, 
     },
   });
+ 
+ 
   mainWindow.setMenuBarVisibility(false)
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 

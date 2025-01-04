@@ -8,6 +8,7 @@ interface propsType{
 }
 const initialForm = {name:'',
   stokNo:'',
+  seriNo:'',
   parcaNo:'',
   miktar:'',
   sarfYeri:'',
@@ -62,6 +63,10 @@ const Form = (props:propsType) => {
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Stok No</label>
             <input className="form-control" value={form.stokNo} onChange={(e)=> formChange(e,'stokNo')}/>
+        </div>
+        <div className="col-sm-12 col-xl-6 mb-3">
+            <label className="form-label">Seri No</label>
+            <input className="form-control" value={form.seriNo} onChange={(e)=> formChange(e,'seriNo')}/>
         </div>
         <div className="col-sm-12 col-xl-6 mb-3">
             <label className="form-label">Parça No</label>

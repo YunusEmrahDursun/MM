@@ -57,6 +57,7 @@ const create = () => {
     db.run(`CREATE TABLE IF NOT EXISTS stocks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
+        seriNo Text,
         stokNo TEXT,
         parcaNo TEXT,
         miktar TEXT,
@@ -91,6 +92,7 @@ const create = () => {
       dokuman TEXT,
       periyod INTEGER,
       personel INTEGER,
+      personelYedek INTEGER,
       yonetici INTEGER,
       kalite INTEGER,
       malzemeler TEXT,
@@ -111,6 +113,7 @@ const create = () => {
       dokuman TEXT,
       ariza TEXT,
       personel INTEGER,
+      personelYedek INTEGER,
       yonetici INTEGER,
       kalite INTEGER,
       malzemeler TEXT,

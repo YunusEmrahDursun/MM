@@ -179,7 +179,6 @@ function Home() {
     WHERE m.deleted = 0 AND strftime('%m', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${month}'
       AND strftime('%Y', datetime(m.baslangicTarihi / 1000, 'unixepoch', '+3 hours')) = '${year}'
   ` }).then(res=>{
-      console.log(res)
       setCurrentMonthMaintences(res);
     })
   };

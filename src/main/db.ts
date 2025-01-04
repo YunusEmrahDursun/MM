@@ -4,7 +4,7 @@ class Database {
     query = async ( sql, args:any = [] ): Promise<any> => {
         const db = new sqlite3.Database('database.db');
         return new Promise((resolve, reject) => {
-            console.log(sql)
+            // console.log(sql)
             db.all(sql, args, (err, rows) => {
                 if ( err )  {
                     var rejected={message:"Veri tabanı hatası!" };

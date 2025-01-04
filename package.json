@@ -150,6 +150,7 @@
     "electron-updater": "^4.6.4",
     "history": "5.x.x",
     "moment": "^2.30.1",
+    "pdf-to-printer": "^5.6.0",
     "react": "^17.0.2",
     "react-big-calendar": "^1.13.4",
     "react-dom": "^17.0.2",

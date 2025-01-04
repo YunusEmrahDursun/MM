@@ -10,7 +10,7 @@ export type Action =
 
 const initialState: StateType = {
   sidebar: false,
-  admin:true
+  admin:false
 };
 
 const reducer = (state: StateType, action: Action): StateType => {
